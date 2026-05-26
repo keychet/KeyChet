@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos – Key Chet</title>
+  <link rel="stylesheet" href="css/kc.css">
+  <style>
+    .cursos-hero{box-shadow:0 6px 18px 0 rgba(0,0,0,0.10);position:relative;z-index:2;background:var(--crema-suave);padding:64px 24px 56px;}
+    .cursos-hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:40px;}
+    .hero-label{font-family:var(--fu);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;color:var(--fucsia);margin-bottom:12px;}
+    .cursos-hero h1{font-family:var(--ft);font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--naranja);line-height:1.1;margin-bottom:14px;}
+    .cursos-hero p{font-size:1rem;color:var(--gris-medio);line-height:1.7;max-width:500px;margin-bottom:28px;}
+    .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+    .hero-deco{display:flex;gap:20px;align-items:center;justify-content:center;}
+    .deco-pill{background:white;border-radius:22px;padding:28px 32px;box-shadow:0 8px 28px rgba(232,74,34,.12);text-align:center;min-width:120px;border:2px solid var(--crema-oscuro);}
+    .deco-pill .num{font-family:var(--ft);font-size:2.6rem;font-weight:700;color:var(--naranja);display:block;}
+    .deco-pill .lab{font-family:var(--fu);font-size:.82rem;font-weight:600;color:var(--gris-medio);}
+    .nivel-tabs{background:var(--crema-suave);padding:0 48px;border-bottom:2px solid var(--gris-borde);display:flex;position:sticky;top:80px;z-index:100;}
+    .tab-btn{padding:18px 28px;border:none;background:transparent;font-family:var(--fu);font-size:.9rem;font-weight:600;color:var(--gris-medio);cursor:pointer;border-bottom:3px solid transparent;transition:var(--trans);margin-bottom:-2px;white-space:nowrap;}
+    .tab-btn:hover{color:var(--naranja);}
+    .tab-btn.active{color:var(--naranja);border-bottom-color:var(--naranja);font-weight:700;}
+    .nivel-section{padding:60px 48px;}
+    .nivel-section.bg-crema{background:var(--crema-suave);}
+    .nivel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;margin-bottom:40px;flex-wrap:wrap;}
+    .nivel-badge{display:inline-flex;align-items:center;gap:8px;color:white;padding:7px 18px;border-radius:999px;font-family:var(--fu);font-size:.84rem;font-weight:700;margin-bottom:12px;}
+    .nivel-header h2{font-family:var(--ft);font-size:2rem;font-weight:700;color:var(--naranja);margin-bottom:8px;}
+    .nivel-header p{font-size:.95rem;color:var(--gris-medio);line-height:1.6;max-width:520px;}
+    .curso-layout{display:grid;grid-template-columns:1fr 340px;gap:32px;}
+    .video-player{border-radius:20px;aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px;cursor:pointer;}
+    .video-bg{position:absolute;inset:0;}
+    .video-overlay{position:relative;z-index:1;text-align:center;}
+    .play-btn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;transition:transform .2s;}
+    .play-btn:hover{transform:scale(1.1);}
+    .play-btn svg{width:22px;height:22px;fill:white;}
+    .video-title{color:white;font-family:var(--ft);font-size:1.1rem;font-weight:700;}
+    .video-sub{color:rgba(255,255,255,.65);font-size:.82rem;margin-top:4px;font-family:var(--fu);}
+    .video-info{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+    .video-info h3{font-family:var(--ft);font-size:1.25rem;font-weight:700;color:var(--naranja);}
+    .video-meta{display:flex;gap:14px;margin-top:5px;flex-wrap:wrap;}
+    .video-meta span{font-family:var(--fu);font-size:.82rem;color:var(--gris-medio);font-weight:500;}
+    .nivel-progress{background:white;border-radius:16px;padding:20px 22px;border:2px solid var(--gris-borde);margin-bottom:14px;}
+    .prog-label{display:flex;justify-content:space-between;margin-bottom:8px;}
+    .prog-label span{font-family:var(--fu);font-size:.8rem;font-weight:600;color:var(--gris-medio);}
+    .prog-label strong{color:var(--naranja);}
+    .aprende-card{background:var(--crema-suave);border:2px solid var(--crema-oscuro);border-radius:18px;padding:20px;margin-bottom:14px;}
+    .aprende-card h4{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+    .aprende-card h4 svg{width:16px;height:16px;}
+    .aprende-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-family:var(--fu);font-size:.82rem;color:var(--gris-medio);line-height:1.45;}
+    .aprende-item svg{width:14px;height:14px;color:var(--naranja);flex-shrink:0;margin-top:2px;}
+    .temario{background:white;border-radius:20px;border:2px solid var(--gris-borde);overflow:hidden;}
+    .temario-header{padding:16px 20px;border-bottom:1px solid var(--gris-borde);}
+    .temario-header h4{font-family:var(--ft);font-size:1rem;font-weight:700;color:var(--naranja);}
+    .temario-header p{font-size:.78rem;color:var(--gris-medio);margin-top:2px;font-family:var(--fu);}
+    .lec-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background .15s;}
+    .lec-item:last-child{border-bottom:none;}
+    .lec-item:hover{background:#fafafa;}
+    .lec-item.active{background:rgba(232,74,34,.05);}
+    .lec-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0;font-family:var(--fu);}
+    .lec-num.done{background:var(--naranja);color:white;}
+    .lec-num.playing{background:var(--fucsia);color:white;}
+    .lec-num.pending{background:#eee;color:#bbb;}
+    .lec-info{flex:1;}
+    .lec-name{font-family:var(--fu);font-size:.87rem;font-weight:600;color:var(--naranja);}
+    .lec-name.dim{color:#bbb;font-weight:400;}
+    .lec-dur{font-family:var(--fu);font-size:.73rem;color:var(--gris-medio);margin-top:1px;}
+    .reto-box{background:var(--crema-suave);border-radius:16px;padding:20px 22px;border:2px solid var(--crema-oscuro);margin-top:20px;}
+    .reto-box h4{font-family:var(--ft);font-size:1rem;font-weight:700;color:var(--naranja);margin-bottom:8px;}
+    .reto-box p{font-size:.88rem;color:var(--gris-medio);line-height:1.6;margin-bottom:14px;}
+    .nivel-bloqueado{background:var(--crema-suave);border-radius:20px;padding:3rem 2rem;text-align:center;border:2px solid var(--gris-borde);grid-column:1/-1;}
+    .nivel-bloqueado h3{font-family:var(--ft);font-size:1.5rem;color:var(--naranja);margin-bottom:.5rem;}
+    .nivel-bloqueado p{color:var(--gris-medio);margin-bottom:1.5rem;font-size:.95rem;}
+    .precio-box{background:white;border-radius:16px;padding:1rem 2rem;display:inline-block;border:2px solid var(--crema-oscuro);margin-bottom:1.5rem;}
+    .precio-box .precio{font-family:var(--ft);font-size:2rem;font-weight:700;color:var(--naranja);}
+    .precio-box .sub{font-family:var(--fu);font-size:.8rem;color:var(--gris-medio);}
+    .recompensa-grid{display:flex;flex-direction:column;gap:12px;margin:1.2rem 0;}
+    .recompensa-opt{display:flex;align-items:center;gap:14px;background:var(--crema-suave);border:2px solid var(--gris-borde);border-radius:16px;padding:16px 18px;cursor:pointer;transition:var(--trans);text-align:left;}
+    .recompensa-opt:hover{border-color:var(--naranja);background:rgba(232,74,34,.04);}
+    .recompensa-opt.selected{border-color:var(--naranja);background:rgba(232,74,34,.08);}
+    .recompensa-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .recompensa-icon svg{width:22px;height:22px;color:white;}
+    .recompensa-opt h5{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);}
+    .recompensa-opt p{font-family:var(--fu);font-size:.78rem;color:var(--gris-medio);margin-top:2px;}
+    /* ── PROGRESO GLOBAL (encima del video) ── */
+    .prog-global{background:white;border:2px solid var(--gris-borde);border-radius:16px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .prog-global-bar{flex:1;min-width:180px;}
+    .prog-global-label{font-family:var(--fu);font-size:.78rem;font-weight:700;color:var(--gris-medio);margin-bottom:6px;display:flex;justify-content:space-between;}
+    .prog-global-label strong{color:var(--naranja);}
+    .prog-global-stats{display:flex;gap:20px;flex-shrink:0;}
+    .pg-stat{text-align:center;}
+    .pg-stat .num{font-family:var(--ft);font-size:1.3rem;font-weight:700;color:var(--naranja);display:block;}
+    .pg-stat .lab{font-family:var(--fu);font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--gris-medio);}
+    /* ── INSTRUCTOR ── */
+    /* ── RECURSOS ── */
+    /* ── PRÓXIMA INSIGNIA ── */
+    .proxima-ins-card{background:var(--crema-suave);border:2px solid var(--crema-oscuro);border-radius:18px;padding:18px;margin-bottom:14px;}
+    .proxima-ins-label{font-family:var(--fu);font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--naranja);opacity:.7;margin-bottom:8px;}
+    .proxima-ins-nombre{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);margin-bottom:4px;}
+    .proxima-ins-desc{font-family:var(--fu);font-size:.76rem;color:var(--gris-medio);margin-bottom:10px;}
+    /* ── INCLUYE ── */
+    @media(max-width:900px){
+      .cursos-hero{padding:40px 16px;}.cursos-hero-inner{grid-template-columns:1fr;}.hero-deco{display:none;}
+      .nivel-tabs{padding:0 16px;overflow-x:auto;top:68px;}
+      .nivel-section{padding:48px 24px;}
+      .curso-layout{grid-template-columns:1fr;}
+      .nivel-header{flex-direction:column;}
+    }
+  </style>
+</head>
+<body>
+<script>const PAGE_TITLE='Cursos';</script>
+<nav id="main-nav"></nav>
+
+<div class="cursos-hero">
+  <div class="cursos-hero-inner">
+    <div>
+      <p class="hero-label">Aprende a tu ritmo</p>
+      <h1>Domina el crochet,<br>nivel por nivel.</h1>
+      <p>Aprende técnicas paso a paso, desde los puntos básicos hasta proyectos complejos.</p>
+      <div class="hero-ctas">
+        <a href="#basico" class="btn-primary">Empezar gratis</a>
+        <a href="#intermedio" class="btn-outline">Ver todos los niveles</a>
+      </div>
+    </div>
+    <div class="hero-deco">
+      <div class="deco-pill"><span class="num">3</span><span class="lab">Niveles</span></div>
+      <div class="deco-pill"><span class="num">17</span><span class="lab">Lecciones</span></div>
+      <div class="deco-pill"><span class="num">100%</span><span class="lab">A tu ritmo</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="nivel-tabs">
+  <button class="tab-btn active" onclick="goTo('basico',this)">Nivel Básico</button>
+  <button class="tab-btn" onclick="goTo('intermedio',this)">Nivel Intermedio</button>
+  <button class="tab-btn" onclick="goTo('avanzado',this)">Nivel Avanzado</button>
+</div>
+
+<div class="nivel-section" id="basico">
+  <div class="nivel-header fade-up">
+    <div>
+      <span class="nivel-badge" style="background:var(--naranja)">Básico · Gratis</span>
+      <h2>Tus primeras puntadas</h2>
+      <p>Aprenderás los fundamentos del crochet, cómo usar la aguja y el hilo, y los puntos básicos para crear tus primeras piezas.</p>
+    </div>
+    <div style="flex-shrink:0;margin-top:4px"><a href="#basico" class="btn-primary">Ingresar al nivel</a></div>
+  </div>
+  <div class="curso-layout fade-up">
+    <div>
+      <!-- BARRA DE PROGRESO GLOBAL -->
+      <div class="prog-global" id="progGlobalBasico">
+        <div class="prog-global-bar">
+          <div class="prog-global-label"><span>Tu progreso actual</span><strong id="pctBasico">0%</strong></div>
+          <div class="prog-bar"><div class="prog-fill" id="fillBasico" style="width:0%"></div></div>
+          <div style="font-family:var(--fu);font-size:.72rem;color:var(--gris-medio);margin-top:4px" id="subtBasico">Comienza tu primera lección</div>
+        </div>
+        <div class="prog-global-stats">
+          <div class="pg-stat"><span class="num" id="lecBasicoCnt">0</span><span class="lab">Lecciones</span></div>
+          <div class="pg-stat"><span class="num">3</span><span class="lab">Recursos</span></div>
+          <div class="pg-stat"><span class="num" id="ptsBasico">0</span><span class="lab">Puntos</span></div>
+        </div>
+      </div>
+      <!-- VIDEO PLAYER -->
+      <div id="playerBasico" style="border-radius:20px;overflow:hidden;margin-bottom:20px;background:#000;aspect-ratio:16/9;position:relative"></div>
+      <div class="video-info">
+        <div>
+          <h3 id="vH3Basico">Tipos de agujas, hilos y algodón</h3>
+          <div class="video-meta" style="margin-top:5px">
+            <span id="vMetaDurBasico">15 min</span><span>Nivel Básico</span>
+          </div>
+        </div>
+        <button class="btn-outline" style="font-size:.84rem;padding:8px 18px" onclick="marcarCompletada('basico')">Marcar completada</button>
+      </div>
+      <div class="reto-box" id="retoBasico" style="display:none">
+        <h4>Reto del nivel básico</h4>
+        <p>Teje una esfera o base circular y, añadiendo formas y bordados, crea un personaje propio. Sube una foto a la comunidad.</p>
+        <a href="comunidad.html" class="btn-primary" style="font-size:.85rem;padding:10px 22px">Subir mi proyecto</a>
+      </div>
+    </div>
+    <div>
+      <!-- LO QUE APRENDERÁS -->
+      <div class="aprende-card">
+        <h4>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Lo que aprenderás
+        </h4>
+        <div class="aprende-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Tipos de agujas, hilos y materiales básicos</div>
+        <div class="aprende-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Cadena, punto deslizante y punto bajo</div>
+        <div class="aprende-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>El anillo mágico y cómo usarlo</div>
+        <div class="aprende-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Aumentos y disminuciones invisibles</div>
+        <div class="aprende-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Crear tu primer amigurumi completo</div>
+      </div>
+      <!-- TEMARIO -->
+      <div class="temario" style="margin-bottom:14px">
+        <div class="temario-header"><h4>Temario</h4><p id="cntBasico">6 lecciones</p></div>
+        <div id="temarioBasico"></div>
+      </div>
+      <!-- PRÓXIMA INSIGNIA -->
+      <div class="proxima-ins-card">
+        <p class="proxima-ins-label">Próxima insignia</p>
+        <p class="proxima-ins-nombre" id="proxInsNombre">Primera puntada</p>
+        <p class="proxima-ins-desc" id="proxInsDesc">Publica tu primer proyecto en la comunidad para ganarla.</p>
+        <div class="prog-bar" style="margin-bottom:5px"><div class="prog-fill" id="proxInsFill" style="width:0%"></div></div>
+        <p style="font-family:var(--fu);font-size:.7rem;color:var(--gris-medio)" id="proxInsRetos">0 de 6 insignias ganadas</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nivel-section bg-crema" id="intermedio">
+  <div class="nivel-header fade-up">
+    <div>
+      <span class="nivel-badge" style="background:var(--fucsia)">Intermedio · $25.000</span>
+      <h2>Lleva tu crochet más lejos</h2>
+      <p>Domina técnicas más elaboradas, aprende a construir amigurumis con personalidad y trabaja con patrones de mayor complejidad.</p>
+    </div>
+    <div style="flex-shrink:0;margin-top:4px" id="btnInterWrap">
+      <button class="btn-primary" style="background:var(--fucsia)" onclick="desbloquearNivel('intermedio')">Desbloquear nivel</button>
+    </div>
+  </div>
+  <div class="curso-layout fade-up" id="layoutIntermedio"></div>
+</div>
+
+<div class="nivel-section" id="avanzado">
+  <div class="nivel-header fade-up">
+    <div>
+      <span class="nivel-badge" style="background:var(--fucsia)">Avanzado · $45.000</span>
+      <h2>Diseña tu propio mundo</h2>
+      <p>Crea piezas únicas, diseña tus propios patrones desde cero y compártelos con la comunidad Key Chet.</p>
+    </div>
+    <div style="flex-shrink:0;margin-top:4px" id="btnAvanWrap">
+      <button class="btn-primary" style="background:var(--fucsia)" onclick="desbloquearNivel('avanzado')">Desbloquear nivel</button>
+    </div>
+  </div>
+  <div class="curso-layout fade-up" id="layoutAvanzado"></div>
+</div>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">Key Chet</div>
+      <p>Aprende crochet a tu ritmo. Cursos por niveles, comunidad vibrante y tienda de patrones en un solo lugar.</p>
+      <div class="footer-socials" style="margin-top:16px">
+        <a href="https://www.instagram.com/keychet.co?igsh=MTdrZm80b2w4bDhn&utm_source=qr" target="_blank" class="footer-social-btn" title="Instagram Key Chet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://wa.me/573005059796" class="footer-social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Aprender</h4>
+      <a href="cursos.html">Cursos de crochet</a>
+      <a href="cursos.html">Nivel Básico</a>
+      <a href="cursos.html">Nivel Intermedio</a>
+      <a href="cursos.html">Nivel Avanzado</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explorar</h4>
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="compras.html">Tienda</a>
+      <a href="mis-proyectos.html">Mi perfil</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ayuda</h4>
+      <a href="ayuda.html">Centro de ayuda</a>
+      <a href="ayuda.html#sec-compras">Compras y pagos</a>
+      <a href="ayuda.html#sec-patrones">Patrones PDF</a>
+      <a href="https://wa.me/573005059796">Contáctanos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Key Chet · Hecho con amor y lana en Colombia</p>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarLogin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Bienvenida de nuevo</h2><p class="modal-sub">Entra a tu cuenta Key Chet</p></div>
+    <form onsubmit="iniciarSesion(event)">
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-form">Entrar</button>
+    </form>
+    <p class="modal-switch">¿No tienes cuenta? <a onclick="cerrarLogin();abrirRegistro()">Regístrate gratis</a></p>
+  </div>
+</div>
+<div class="modal-overlay" id="modalRegistro"><div class="modal"><button class="modal-close" onclick="cerrarRegistro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div style="text-align:center;margin-bottom:1.5rem"><h2>Únete a Key Chet</h2><p class="modal-sub">Crea tu cuenta gratis</p></div><form onsubmit="registrar(event)"><div class="form-group"><label>Nombre completo</label><input type="text" id="regNombre" placeholder="Tu nombre" required></div><div class="form-group"><label>Correo electrónico</label><input type="email" id="regEmail" placeholder="tu@correo.com" required></div><div class="form-group"><label>Edad</label><input type="number" id="regEdad" placeholder="Ej: 22" min="8" max="99" required></div><div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required></div><button type="submit" class="btn-form">Crear mi cuenta</button></form><p class="modal-switch">¿Ya tienes cuenta? <a onclick="cerrarRegistro();abrirLogin()">Iniciar sesión</a></p></div></div>
+<div class="modal-overlay" id="modalCarrito"><div class="modal" style="max-width:500px"><button class="modal-close" onclick="document.getElementById('modalCarrito').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><h2 style="margin-bottom:1.5rem">Mi carrito</h2><div id="carritoItems" style="max-height:300px;overflow-y:auto;margin-bottom:1rem"></div><div style="padding-top:1rem;border-top:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between"><div><p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio)">Total</p><div style="font-family:var(--ft);font-size:1.5rem;font-weight:700;color:var(--naranja)" id="carritoTotal">$0</div></div><button class="btn-form" style="width:auto;padding:12px 24px;margin-top:0" onclick="finalizarCompra()">Finalizar compra</button></div></div></div>
+
+<div class="modal-overlay" id="modalRecompensa">
+  <div class="modal" style="max-width:420px;text-align:center">
+    <h2 style="margin-bottom:.4rem">¡Nivel completado!</h2>
+    <p class="modal-sub" id="recompNivel">Elige tu recompensa</p>
+    <div class="recompensa-grid" id="recompOpts"></div>
+    <button class="btn-form" id="recompBtn" disabled onclick="reclamarRecompensa()">Reclamar recompensa</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalInsignia">
+  <div class="modal" style="max-width:360px;text-align:center">
+    <div id="insModalIcon" style="font-size:3.5rem;margin-bottom:1rem;display:inline-block"></div>
+    <h2 style="margin-bottom:.4rem">Insignia desbloqueada</h2>
+    <p style="font-family:var(--fu);font-size:1rem;font-weight:700;color:var(--naranja);margin-bottom:.3rem" id="insModalNombre"></p>
+    <p class="modal-sub" id="insModalDesc"></p>
+    <div style="background:var(--crema-suave);border-radius:14px;padding:.9rem;margin:1rem 0;border:2px solid var(--crema-oscuro)"><p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio)">Agregada a tu colección en el perfil</p></div>
+    <button class="btn-form" onclick="document.getElementById('modalInsignia').classList.remove('open')">Continuar</button>
+  </div>
+</div>
+
+<style>@keyframes insPopIn{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}</style>
+
+<script src="js/kc.js"></script>
+<script>
+const NIVELES={
+  basico:{
+    lecciones:[
+      {titulo:'Tipos de agujas, hilos y algodón',dur:'15 min', yt:'9CtD45QOPg4'},
+      {titulo:'Cadeneta y punto bajo',dur:'20 min', yt:'9IUtklDxljY'},
+      {titulo:'Punto alto, deslizado y anillo mágico',dur:'22 min'},
+      {titulo:'Lectura de patrones tejidos',dur:'18 min'},
+      {titulo:'Formas básicas: círculos y esferas',dur:'25 min'},
+      {titulo:'Proyecto final: Abejita pequeña',dur:'40 min'},
+    ],
+    colorPlay:'var(--naranja)',colorBg:'linear-gradient(135deg,#3d2010,#1a0a05)',colorGlow:'rgba(232,74,34,.20)',
+    reto:'Teje una esfera o base circular y, añadiendo formas y bordados, crea un personaje propio.',
+    recompensas:[
+      {id:'corazon',nombre:'Patrón Corazón',desc:'PDF gratuito — Nivel básico',file:'patrones/patron_corazon.pdf',icon:'pdf'},
+      {id:'abeja',nombre:'Patrón Abeja',desc:'PDF gratuito — Nivel básico',file:'patrones/patron_abeja.pdf',icon:'pdf'},
+      {id:'desc10i',nombre:'10% descuento',desc:'En el Nivel Intermedio al inscribirte',file:null,icon:'gift'},
+    ],
+  },
+  intermedio:{
+    lecciones:[
+      {titulo:'Bienvenida al nivel intermedio',dur:'10 min'},
+      {titulo:'Cambios de color',dur:'20 min'},
+      {titulo:'Cuerpo base para amigurumis',dur:'30 min'},
+      {titulo:'Coser brazos, piernas y accesorios',dur:'25 min'},
+      {titulo:'Ojos de seguridad y bordado facial',dur:'20 min'},
+      {titulo:'Proyecto final: amigurumi personalizado',dur:'60 min'},
+    ],
+    colorPlay:'var(--fucsia)',colorBg:'linear-gradient(135deg,#4a0020,#2d0015)',colorGlow:'rgba(232,50,138,.20)',
+    reto:'Usando el cuerpo base aprendido, crea un amigurumi que se parezca a alguien de tu familia o a ti misma.',
+    recompensas:[
+      {id:'gato',nombre:'Patrón Gato',desc:'PDF gratuito — Nivel intermedio',file:'patrones/patron_gato.pdf',icon:'pdf'},
+      {id:'honguito',nombre:'Patrón Honguito',desc:'PDF gratuito — Nivel intermedio',file:'patrones/patron_honguito.pdf',icon:'pdf'},
+      {id:'desc10a',nombre:'10% descuento',desc:'En el Nivel Avanzado al inscribirte',file:null,icon:'gift'},
+    ],
+  },
+  avanzado:{
+    lecciones:[
+      {titulo:'Bienvenida al nivel avanzado',dur:'12 min'},
+      {titulo:'Articular muñecos con alambre',dur:'35 min'},
+      {titulo:'Tipos de cabellos tejidos',dur:'30 min'},
+      {titulo:'De dibujo a muñeco: proporciones',dur:'40 min'},
+      {titulo:'Proyecto final: personaje con detalles',dur:'90 min'},
+    ],
+    colorPlay:'var(--fucsia)',colorBg:'linear-gradient(135deg,#4a0020,#2d0015)',colorGlow:'rgba(232,50,138,.20)',
+    reto:'Dibuja un personaje original y téjelo sin usar patrones externos.',
+    recompensas:[
+      {id:'chimuelo',nombre:'Patrón Chimuelo',desc:'PDF gratuito — Nivel avanzado',file:'patrones/patron_chimuelo.pdf',icon:'pdf'},
+    ],
+  },
+};
+
+const pdfIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+const giftIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>`;
+let nivelRecompensa=null,opcionSeleccionada=null;
+
+function buildTemario(nivel){
+  const lecs=NIVELES[nivel].lecciones;const prog=getProgreso(nivel);const actual=prog.actual||0;
+  return lecs.map((l,i)=>{
+    const done=prog.completadas.includes(i);const playing=i===actual&&!done;
+    const cls=done?'done':playing?'playing':'pending';const txt=done?'✓':playing?'▶':(i+1);
+    return `<div class="lec-item${playing?' active':''}" onclick="seleccionar('${nivel}',${i})">
+      <div class="lec-num ${cls}">${txt}</div>
+      <div class="lec-info"><p class="lec-name${(!done&&!playing)?' dim':''}">${l.titulo}</p><p class="lec-dur">${l.dur}</p></div>
+    </div>`;
+  }).join('');
+}
+
+function renderBasico(){
+  const prog=getProgreso('basico');const total=NIVELES.basico.lecciones.length;
+  const pct=Math.round((prog.completadas.length/total)*100);const actual=prog.actual||0;const lec=NIVELES.basico.lecciones[actual];
+  const u=getUsuario();const pts=u?u.puntos||0:0;const ins=getInsignias();
+
+  const player=document.getElementById('playerBasico');
+  if(player){
+    if(lec.yt){
+      player.innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${lec.yt}" title="${lec.titulo}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:20px;display:block"></iframe>`;
+    } else {
+      player.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#3d2010,#1a0a05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;border-radius:20px" onclick="toast('Video disponible muy pronto.','info')">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--naranja);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 14px rgba(232,74,34,.2)"><svg viewBox="0 0 24 24" fill="white" style="width:22px;height:22px;margin-left:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <p style="font-family:var(--fu);font-size:.9rem;color:rgba(255,255,255,.8)">${lec.titulo}</p>
+        <p style="font-family:var(--fu);font-size:.75rem;color:rgba(255,255,255,.5)">${lec.dur} · Disponible pronto</p>
+      </div>`;
+    }
+  }
+  document.getElementById('fillBasico').style.width=pct+'%';
+  document.getElementById('pctBasico').textContent=pct+'%';
+  document.getElementById('cntBasico').textContent=total+' lecciones';
+  document.getElementById('temarioBasico').innerHTML=buildTemario('basico');
+  document.getElementById('retoBasico').style.display=prog.completadas.length===total?'block':'none';
+
+  // Nuevos elementos del sidebar enriquecido
+  const lecCnt=document.getElementById('lecBasicoCnt');if(lecCnt)lecCnt.textContent=prog.completadas.length+'/'+total;
+  const ptsEl=document.getElementById('ptsBasico');if(ptsEl)ptsEl.textContent=pts;
+  const subtEl=document.getElementById('subtBasico');
+  if(subtEl)subtEl.textContent=prog.completadas.length>0?`Módulo ${actual+1}: ${lec.titulo}`:'Comienza tu primera lección';
+
+  // Próxima insignia
+  const INSIGNIAS_DATA=[
+    {id:'puntada',label:'Primera puntada',desc:'Publica tu primer proyecto en la comunidad.'},
+    {id:'fotografa',label:'Fotógrafa',desc:'Publica 2 proyectos en la comunidad.'},
+    {id:'creadora',label:'Creadora',desc:'Publica 4 proyectos en la comunidad.'},
+    {id:'inspiracion',label:'Inspiración',desc:'Recibe 10 likes en tus proyectos.'},
+    {id:'favorita',label:'Favorita',desc:'Recibe 50 likes en un proyecto.'},
+    {id:'comentarista',label:'Comentarista',desc:'Comenta en al menos un proyecto.'},
+  ];
+  const proxima=INSIGNIAS_DATA.find(x=>!ins.includes(x.id));
+  const nmEl=document.getElementById('proxInsNombre');const dcEl=document.getElementById('proxInsDesc');
+  const fillEl=document.getElementById('proxInsFill');const rtEl=document.getElementById('proxInsRetos');
+  if(proxima){
+    if(nmEl)nmEl.textContent=proxima.label;
+    if(dcEl)dcEl.textContent=proxima.desc;
+    const prog2=Math.round((ins.length/INSIGNIAS_DATA.length)*100);
+    if(fillEl)fillEl.style.width=prog2+'%';
+    if(rtEl)rtEl.textContent=ins.length+' de '+INSIGNIAS_DATA.length+' insignias ganadas';
+  } else {
+    if(nmEl)nmEl.textContent='¡Todas ganadas!';
+    if(dcEl)dcEl.textContent='Has completado todas las insignias disponibles.';
+    if(fillEl)fillEl.style.width='100%';
+  }
+}
+
+function renderNivelAbierto(nivel){
+  const id=nivel==='intermedio'?'layoutIntermedio':'layoutAvanzado';
+  const data=NIVELES[nivel];const prog=getProgreso(nivel);const total=data.lecciones.length;
+  const pct=Math.round((prog.completadas.length/total)*100);const actual=prog.actual||0;const lec=data.lecciones[actual];
+  const retoVis=prog.completadas.length===total;
+  document.getElementById(id).innerHTML=`
+    <div>
+      <div class="video-player" onclick="toast('Video disponible muy pronto.','info')" style="cursor:pointer">
+        <div class="video-bg" style="background:${data.colorBg}"></div>
+        <div class="video-overlay">
+          <button class="play-btn" style="background:${data.colorPlay};box-shadow:0 0 0 14px ${data.colorGlow}">
+            <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <p class="video-title">Lección ${actual+1}: ${lec.titulo}</p>
+          <p class="video-sub">${lec.dur}</p>
+        </div>
+      </div>
+      <div class="video-info">
+        <div><h3>${lec.titulo}</h3><div class="video-meta" style="margin-top:5px"><span>${lec.dur}</span><span>${nivel.charAt(0).toUpperCase()+nivel.slice(1)}</span></div></div>
+        <button class="btn-outline" style="font-size:.84rem;padding:8px 18px" onclick="marcarCompletada('${nivel}')">Marcar completada</button>
+      </div>
+      ${retoVis?`<div class="reto-box"><h4>Reto del nivel</h4><p>${data.reto}</p><a href="comunidad.html" class="btn-primary" style="font-size:.85rem;padding:10px 22px">Subir mi proyecto</a></div>`:''}
+    </div>
+    <div>
+      <div class="nivel-progress">
+        <div class="prog-label"><span>Progreso</span><strong>${pct}%</strong></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${data.colorPlay}"></div></div>
+      </div>
+      <div class="temario">
+        <div class="temario-header"><h4>Temario</h4><p>${total} lecciones</p></div>
+        ${buildTemario(nivel)}
+      </div>
+    </div>`;
+}
+
+function renderBloqueado(nivel){
+  const id=nivel==='intermedio'?'layoutIntermedio':'layoutAvanzado';
+  const precio=nivel==='intermedio'?'$25.000':'$45.000';
+  document.getElementById(id).innerHTML=`<div class="nivel-bloqueado">
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--crema);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:var(--gris-medio)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h3>Nivel bloqueado</h3>
+    <p>Inscríbete para acceder a todas las lecciones.</p>
+    <div class="precio-box"><div class="precio">${precio} COP</div><div class="sub">Acceso completo al nivel</div></div><br>
+    <button class="btn-primary" style="background:var(--fucsia)" onclick="desbloquearNivel('${nivel}')">Inscribirme ahora</button>
+  </div>`;
+}
+
+function seleccionar(nivel,idx){const prog=getProgreso(nivel);prog.actual=idx;setProgreso(nivel,prog);if(nivel==='basico')renderBasico();else renderNivelAbierto(nivel);}
+
+function marcarCompletada(nivel){
+  const prog=getProgreso(nivel);const idx=prog.actual||0;const total=NIVELES[nivel].lecciones.length;
+  if(!prog.completadas.includes(idx))prog.completadas.push(idx);
+  const completoAhora=prog.completadas.length===total;
+  if(idx+1<total)prog.actual=idx+1;
+  setProgreso(nivel,prog);
+  const u=getUsuario();if(u){u.puntos=(u.puntos||0)+10;setUsuario(u);}
+  toast('Lección completada. +10 puntos','ok');
+  if(completoAhora)setTimeout(()=>abrirRecompensas(nivel),600);
+  if(nivel==='basico')renderBasico();else renderNivelAbierto(nivel);
+}
+
+function abrirRecompensas(nivel){
+  nivelRecompensa=nivel;opcionSeleccionada=null;
+  const data=NIVELES[nivel];
+  document.getElementById('recompNivel').textContent=`Completaste el Nivel ${nivel.charAt(0).toUpperCase()+nivel.slice(1)} — elige tu recompensa`;
+  document.getElementById('recompBtn').disabled=true;
+  document.getElementById('recompOpts').innerHTML=data.recompensas.map((r,i)=>`
+    <div class="recompensa-opt" onclick="selRecompensa(${i})" id="ropt-${i}">
+      <div class="recompensa-icon" style="background:${r.icon==='pdf'?'var(--naranja)':'var(--fucsia)'}">${r.icon==='pdf'?pdfIcon:giftIcon}</div>
+      <div><h5>${r.nombre}</h5><p>${r.desc}</p></div>
+    </div>`).join('');
+  document.getElementById('modalRecompensa').classList.add('open');
+}
+
+function selRecompensa(idx){
+  opcionSeleccionada=idx;
+  document.querySelectorAll('.recompensa-opt').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('recompBtn').disabled=false;
+}
+
+function reclamarRecompensa(){
+  if(opcionSeleccionada===null||!nivelRecompensa)return;
+  const r=NIVELES[nivelRecompensa].recompensas[opcionSeleccionada];
+  document.getElementById('modalRecompensa').classList.remove('open');
+  if(r.file){
+    const pts=getPatrones();
+    if(!pts.find(p=>p.id===r.id)){
+      pts.push({id:r.id,nombre:r.nombre.replace('Patrón ',''),file:r.file,fecha:new Date().toLocaleDateString('es-CO')});
+      setPatrones(pts);
+    }
+    toast(`${r.nombre} guardado en tus patrones.`,'ok');
+    setTimeout(()=>{const a=document.createElement('a');a.href=r.file;a.download=`KeyChet_${r.nombre}.pdf`;a.click();},400);
+  } else {
+    // Descuento → WhatsApp con mensaje predeterminado
+    toast('Redirigiendo a WhatsApp para aplicar tu descuento...','info');
+    const tipoDesc = nivelRecompensa==='basico' ? 'descuento_intermedio' : 'descuento_avanzado';
+    setTimeout(()=>wa(tipoDesc), 700);
+  }
+}
+
+function desbloquearNivel(nivel){
+  const u=getUsuario();if(!u){toast('Inicia sesión para inscribirte.','err');abrirLogin();return;}
+  toast('Redirigiendo a WhatsApp para completar tu inscripción...','info');
+  setTimeout(()=>wa(nivel==='intermedio'?'inscribir_intermedio':'inscribir_avanzado'), 600);
+}
+
+function renderTodo(){
+  renderBasico();
+  if(isDemoOn()||getUnlock('intermedio'))renderNivelAbierto('intermedio');else renderBloqueado('intermedio');
+  if(isDemoOn()||getUnlock('avanzado'))renderNivelAbierto('avanzado');else renderBloqueado('avanzado');
+}
+
+function goTo(id,btn){
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+}
+window.addEventListener('scroll',()=>{
+  const ids=['basico','intermedio','avanzado'];const tabs=document.querySelectorAll('.tab-btn');let activo=0;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-160)activo=i;});
+  tabs.forEach((t,i)=>t.classList.toggle('active',i===activo));
+});
+
+document.addEventListener('DOMContentLoaded',()=>renderTodo());
+</script>
+</body>
+</html>

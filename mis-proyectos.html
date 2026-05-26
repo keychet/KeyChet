@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil – Key Chet</title>
+  <link rel="stylesheet" href="css/kc.css">
+  <style>
+    /* PERFIL BANNER */
+    .perfil-banner{box-shadow:0 6px 18px 0 rgba(0,0,0,0.10);position:relative;z-index:2;background:var(--crema-suave);padding:0 48px;display:flex;align-items:center;gap:28px;min-height:180px;flex-wrap:wrap;}
+    .avatar-grande{width:86px;height:86px;border-radius:50%;background:var(--fucsia);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-size:2.2rem;font-weight:700;color:white;border:4px solid white;box-shadow:0 4px 16px rgba(232,50,138,.25);flex-shrink:0;cursor:pointer;}
+    .avatar-grande img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .perfil-info{flex:1;}
+    .perfil-info h1{font-family:var(--ft);font-size:1.9rem;font-weight:700;color:var(--naranja);}
+    .nivel-pill{display:inline-flex;align-items:center;gap:6px;background:var(--naranja);color:white;padding:4px 14px;border-radius:999px;font-family:var(--fu);font-size:.78rem;font-weight:700;margin-top:8px;margin-bottom:12px;}
+    .perfil-stats{display:flex;gap:24px;flex-wrap:wrap;}
+    .p-stat .num{font-family:var(--ft);font-size:1.4rem;font-weight:700;color:var(--naranja);display:block;}
+    .p-stat .lab{font-size:.74rem;color:var(--gris-medio);font-family:var(--fu);}
+    .perfil-acciones{display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+    .btn-ajustes{display:flex;align-items:center;gap:8px;background:transparent;color:var(--naranja);border:2px solid var(--naranja);padding:9px 18px;border-radius:999px;font-family:var(--fu);font-size:.85rem;font-weight:700;cursor:pointer;transition:var(--trans);}
+    .btn-ajustes svg{width:16px;height:16px;}
+    .btn-ajustes:hover{background:var(--naranja);color:white;}
+    .btn-salir{display:flex;align-items:center;gap:6px;background:transparent;color:var(--gris-medio);border:none;font-family:var(--fu);font-size:.82rem;cursor:pointer;transition:color .2s;padding:4px 0;}
+    .btn-salir svg{width:15px;height:15px;}
+    .btn-salir:hover{color:var(--naranja);}
+    /* PROGRESO BANNER */
+    .progreso-banner{background:var(--crema-suave);padding:32px 48px;border-top:2px solid var(--gris-borde);border-bottom:2px solid var(--gris-borde);}
+    .prog-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+    .prog-header h3{font-family:var(--ft);font-size:1.2rem;font-weight:700;color:var(--naranja);}
+    .prog-header p{font-size:.8rem;color:var(--gris-medio);font-family:var(--fu);}
+    .niveles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+    .nivel-card{background:white;border-radius:20px;padding:24px;border:2px solid var(--gris-borde);transition:var(--trans);position:relative;overflow:hidden;}
+    .nivel-card.activo{border-color:var(--naranja);box-shadow:0 8px 28px rgba(232,74,34,.15);}
+    .nivel-card.activo::before{content:'EN CURSO';position:absolute;top:14px;right:14px;background:var(--naranja);color:white;font-family:var(--fu);font-size:.58rem;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:999px;}
+    .nivel-card:not(.activo){opacity:.7;}
+    .nivel-card:not(.activo):hover{border-color:var(--crema-oscuro);opacity:.9;}
+    .nivel-card h4{font-family:var(--ft);font-size:1rem;font-weight:700;color:var(--naranja);margin-bottom:3px;}
+    .nivel-card .estado{font-size:.74rem;font-family:var(--fu);color:var(--gris-medio);margin-bottom:14px;display:flex;align-items:center;gap:5px;}
+    .nivel-card .estado svg{width:12px;height:12px;}
+    .prog-pct{font-size:.78rem;font-weight:800;font-family:var(--fu);margin-top:5px;color:var(--naranja);}
+    .nivel-thumb{width:44px;height:44px;border-radius:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;}
+    .nivel-thumb svg{width:22px;height:22px;color:white;}
+    /* TABS */
+    .mis-tabs{padding:0 48px;background:var(--blanco);border-bottom:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between;overflow-x:auto;}
+    .mis-tabs-left{display:flex;}
+    .mtab-btn{padding:16px 22px;border:none;background:transparent;font-family:var(--fu);font-size:.9rem;font-weight:600;color:var(--gris-medio);cursor:pointer;border-bottom:3px solid transparent;transition:var(--trans);margin-bottom:-2px;white-space:nowrap;}
+    .mtab-btn:hover{color:var(--naranja);}
+    .mtab-btn.active{color:var(--naranja);border-bottom-color:var(--naranja);font-weight:700;}
+    .btn-nuevo{background:var(--fucsia);color:white;border:none;padding:9px 20px;border-radius:999px;font-family:var(--fu);font-size:.85rem;font-weight:700;cursor:pointer;transition:var(--trans);white-space:nowrap;}
+    .btn-nuevo:hover{transform:translateY(-2px);}
+    /* LAYOUT */
+    .mis-layout{display:grid;grid-template-columns:1fr 280px;gap:32px;padding:32px 48px 56px;}
+    .panel{display:none;}
+    .panel.active{display:block;}
+    /* CURSOS */
+    .curso-item{display:flex;align-items:center;gap:14px;background:var(--crema-suave);border-radius:14px;padding:14px 18px;border:2px solid var(--gris-borde);transition:var(--trans);cursor:pointer;margin-bottom:12px;}
+    .curso-item:hover{border-color:var(--naranja);box-shadow:0 4px 14px rgba(232,74,34,.1);}
+    .curso-thumb-mini{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--ft);font-size:1.5rem;}
+    .curso-item-info{flex:1;}
+    .curso-item-info h4{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);}
+    .ci-meta{font-size:.76rem;color:var(--gris-medio);font-family:var(--fu);margin-top:2px;margin-bottom:6px;}
+    .ci-bar{background:#e0e0e0;border-radius:999px;height:6px;overflow:hidden;}
+    .ci-fill{height:100%;border-radius:999px;}
+    .ci-pct{font-size:.7rem;font-weight:700;font-family:var(--fu);margin-top:3px;}
+    .btn-continuar{background:var(--naranja);color:white;border:none;padding:7px 16px;border-radius:999px;font-family:var(--fu);font-size:.76rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:var(--trans);flex-shrink:0;}
+    .btn-continuar:hover{background:#d03e18;}
+    /* PATRONES */
+    .patrones-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+    .patron-item{background:white;border-radius:14px;border:2px solid var(--gris-borde);overflow:hidden;transition:var(--trans);}
+    .patron-item:hover{border-color:var(--naranja);transform:translateY(-3px);}
+    .patron-thumb{height:90px;display:flex;align-items:center;justify-content:center;background:var(--crema-suave);color:var(--naranja);}
+    .patron-thumb svg{width:40px;height:40px;opacity:.4;}
+    .patron-body{padding:10px 12px;}
+    .patron-body h5{font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--naranja);}
+    .patron-body p{font-size:.7rem;color:var(--gris-medio);font-family:var(--fu);margin-top:2px;}
+    .btn-dl-sm{display:flex;align-items:center;gap:5px;margin-top:8px;width:100%;background:var(--crema);color:var(--naranja);border:none;padding:6px;border-radius:8px;font-family:var(--fu);font-size:.72rem;font-weight:700;cursor:pointer;justify-content:center;transition:var(--trans);}
+    .btn-dl-sm:hover{background:var(--crema-oscuro);}
+    .btn-dl-sm svg{width:13px;height:13px;}
+    /* PROYECTOS */
+    .proy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+    .proy-card{background:white;border-radius:14px;overflow:hidden;border:2px solid var(--gris-borde);transition:var(--trans);}
+    .proy-card:hover{border-color:var(--naranja);transform:translateY(-3px);}
+    .proy-img{height:130px;overflow:hidden;background:var(--crema-suave);display:flex;align-items:center;justify-content:center;color:var(--naranja);}
+    .proy-img img{width:100%;height:100%;object-fit:cover;}
+    .proy-img svg{width:36px;height:36px;opacity:.35;}
+    .proy-body{padding:10px 12px;}
+    .proy-body h5{font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--naranja);}
+    .proy-body p{font-size:.72rem;color:var(--gris-medio);font-family:var(--fu);margin-top:2px;}
+    .empty-panel{text-align:center;padding:3rem 0;color:var(--gris-medio);}
+    .empty-panel svg{width:48px;height:48px;opacity:.3;margin-bottom:1rem;color:var(--naranja);}
+    .empty-panel p{font-family:var(--fu);font-size:.92rem;margin-top:.5rem;}
+    /* SIDEBAR INSIGNIAS */
+    .ins-sidebar{background:var(--crema-suave);border-radius:18px;padding:22px;border:2px solid var(--gris-borde);}
+    .ins-sidebar h3{font-family:var(--ft);font-size:1rem;font-weight:700;color:var(--naranja);margin-bottom:6px;}
+    .ins-sidebar p{font-size:.78rem;color:var(--gris-medio);font-family:var(--fu);margin-bottom:18px;}
+    .ins-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;width:100%;}
+    .ins-item{background:white;border-radius:12px;padding:12px 6px;border:2px solid var(--gris-borde);text-align:center;transition:var(--trans);min-width:0;overflow:hidden;}
+    .ins-item:hover{transform:translateY(-3px);}
+    .ins-item.earned{border-color:var(--naranja);}
+    .ins-item.bloqueada{opacity:.4;filter:grayscale(.7);}
+    .ins-icon-wrap{width:32px;height:32px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .ins-icon-wrap svg{width:16px;height:16px;color:white;}
+    .ins-nm{font-size:.64rem;font-weight:700;color:var(--naranja);font-family:var(--fu);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .proxima-ins{background:white;border-radius:12px;padding:14px;border:2px dashed var(--naranja);}
+    .proxima-ins h5{font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--naranja);margin-bottom:6px;}
+    .proxima-ins p{font-size:.76rem;color:var(--gris-medio);font-family:var(--fu);margin-bottom:8px;}
+    .prox-pct{font-size:.7rem;font-weight:700;color:var(--naranja);font-family:var(--fu);margin-top:4px;}
+    /* AJUSTES MODAL */
+    .settings-section{margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--gris-borde);}
+    .settings-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+    .settings-section h4{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);margin-bottom:.75rem;}
+    /* NO SESION */
+    .no-sesion{text-align:center;padding:5rem 2rem;max-width:480px;margin:0 auto;}
+    .no-sesion svg{width:56px;height:56px;color:var(--naranja);opacity:.4;margin-bottom:1.5rem;}
+    .no-sesion h2{font-family:var(--ft);font-size:1.6rem;color:var(--naranja);margin-bottom:.5rem;}
+    .no-sesion p{color:var(--gris-medio);margin-bottom:1.5rem;}
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .perfil-banner{padding:24px;flex-direction:row;align-items:flex-start;}.perfil-acciones{align-items:flex-start;}
+      .progreso-banner{padding:24px;}.niveles-grid{grid-template-columns:1fr;}
+      .mis-tabs{padding:0 16px;}.mis-layout{grid-template-columns:1fr;padding:24px;}
+      .patrones-grid,.proy-grid{grid-template-columns:1fr;}
+    }
+    @media(max-width:600px){.perfil-banner{flex-direction:column;}.perfil-acciones{flex-direction:row;align-items:center;}.perfil-stats{gap:16px;}}
+  </style>
+</head>
+<body>
+<script>const PAGE_TITLE='Perfil';</script>
+
+<nav id="main-nav"></nav>
+
+<div id="pageContent"></div>
+
+<!-- MODAL AJUSTES -->
+<div class="modal-overlay" id="modalAjustes">
+  <div class="modal" style="max-width:460px">
+    <button class="modal-close" onclick="cerrarAjustes()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h2 style="margin-bottom:1.5rem">Ajustes del perfil</h2>
+    <!-- Foto -->
+    <div class="settings-section">
+      <h4>Foto de perfil</h4>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <div id="ajustesAvatar" style="width:60px;height:60px;border-radius:50%;background:var(--fucsia);display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-size:1.4rem;font-weight:700;color:white;overflow:hidden;cursor:pointer;" onclick="document.getElementById('fotoInput').click()"></div>
+        <div>
+          <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="previewFoto(this)">
+          <button onclick="document.getElementById('fotoInput').click()" style="background:none;border:2px solid var(--naranja);color:var(--naranja);padding:7px 16px;border-radius:999px;font-family:var(--fu);font-size:.82rem;font-weight:700;cursor:pointer;">Cambiar foto</button>
+        </div>
+      </div>
+    </div>
+    <!-- Nombre -->
+    <div class="settings-section">
+      <h4>Información personal</h4>
+      <form onsubmit="guardarAjustes(event)">
+        <div class="form-group"><label>Nombre completo</label><input type="text" id="ajNombre" placeholder="Tu nombre" required></div>
+        <div class="form-group"><label>Correo electrónico</label><input type="email" id="ajEmail" placeholder="tu@correo.com" required></div>
+        <button type="submit" class="btn-form" style="margin-top:.5rem">Guardar cambios</button>
+      </form>
+    </div>
+    <!-- Cerrar sesión -->
+    <div class="settings-section">
+      <h4>Sesión</h4>
+      <button onclick="cerrarSesion()" style="display:flex;align-items:center;gap:8px;background:none;border:2px solid #eee;color:var(--gris-medio);padding:10px 18px;border-radius:999px;font-family:var(--fu);font-size:.85rem;font-weight:700;cursor:pointer;transition:var(--trans);width:100%;justify-content:center;"
+        onmouseover="this.style.borderColor='var(--naranja)';this.style.color='var(--naranja)'"
+        onmouseout="this.style.borderColor='#eee';this.style.color='var(--gris-medio)'">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALES AUTH -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarLogin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Bienvenida de nuevo</h2><p class="modal-sub">Entra a tu cuenta Key Chet</p></div>
+    <form onsubmit="iniciarSesion(event)">
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-form">Entrar</button>
+    </form>
+    <p class="modal-switch">¿No tienes cuenta? <a onclick="cerrarLogin();abrirRegistro()">Regístrate gratis</a></p>
+  </div>
+</div>
+<div class="modal-overlay" id="modalRegistro">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarRegistro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Únete a Key Chet</h2><p class="modal-sub">Crea tu cuenta gratis</p></div>
+    <form onsubmit="registrar(event)">
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="regNombre" placeholder="Tu nombre" required></div>
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="regEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Edad</label><input type="number" id="regEdad" placeholder="Ej: 22" min="8" max="99" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required></div>
+      <button type="submit" class="btn-form">Crear mi cuenta</button>
+    </form>
+    <p class="modal-switch">¿Ya tienes cuenta? <a onclick="cerrarRegistro();abrirLogin()">Iniciar sesión</a></p>
+  </div>
+</div>
+
+<!-- MODAL CARRITO -->
+<div class="modal-overlay" id="modalCarrito">
+  <div class="modal" style="max-width:500px">
+    <button class="modal-close" onclick="document.getElementById('modalCarrito').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="margin-bottom:1.5rem">Mi carrito</h2>
+    <div id="carritoItems" style="max-height:300px;overflow-y:auto;margin-bottom:1rem"></div>
+    <div style="padding-top:1rem;border-top:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between">
+      <div><p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio)">Total</p><div style="font-family:var(--ft);font-size:1.5rem;font-weight:700;color:var(--naranja)" id="carritoTotal">$0</div></div>
+      <button class="btn-form" style="width:auto;padding:12px 24px;margin-top:0" onclick="finalizarCompra()">Finalizar compra</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">Key Chet</div>
+      <p>Aprende crochet a tu ritmo. Cursos por niveles, comunidad vibrante y tienda de patrones en un solo lugar.</p>
+      <div class="footer-socials" style="margin-top:16px">
+        <a href="https://www.instagram.com/keychet.co?igsh=MTdrZm80b2w4bDhn&utm_source=qr" target="_blank" class="footer-social-btn" title="Instagram Key Chet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://wa.me/573005059796" class="footer-social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Aprender</h4>
+      <a href="cursos.html">Cursos de crochet</a>
+      <a href="cursos.html">Nivel Básico</a>
+      <a href="cursos.html">Nivel Intermedio</a>
+      <a href="cursos.html">Nivel Avanzado</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explorar</h4>
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="compras.html">Tienda</a>
+      <a href="mis-proyectos.html">Mi perfil</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ayuda</h4>
+      <a href="ayuda.html">Centro de ayuda</a>
+      <a href="ayuda.html#sec-compras">Compras y pagos</a>
+      <a href="ayuda.html#sec-patrones">Patrones PDF</a>
+      <a href="https://wa.me/573005059796">Contáctanos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Key Chet · Hecho con amor y lana en Colombia</p>
+    
+  </div>
+</footer>
+
+<script src="js/kc.js"></script>
+<script>
+const NIVEL_INFO={
+  basico:      {label:'Básico',      total:7,  color:'#e84a22', bg:'linear-gradient(135deg,var(--crema),var(--crema-oscuro))'},
+  intermedio:  {label:'Intermedio',  total:6,  color:'#AA1739', bg:'linear-gradient(135deg,var(--crema-oscuro),#e8b86d)'},
+  avanzado:    {label:'Avanzado',    total:5,  color:'#e84a22', bg:'linear-gradient(135deg,#ffd07a,#e84a22)'},
+};
+
+const INSIGNIAS=[
+  {id:'puntada',    color:'#e84a22',label:'Primera puntada',desc:'Publica tu primer proyecto',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>`},
+  {id:'fotografa',  color:'#AA1739',label:'Fotógrafa',      desc:'Publica 2 proyectos',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`},
+  {id:'comentarista',color:'#e84a22',label:'Comentarista',  desc:'Comenta en algún proyecto',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`},
+  {id:'creadora',   color:'#ff9800',label:'Creadora',       desc:'Publica 4 proyectos',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`},
+  {id:'favorita',   color:'#e84a22',label:'Favorita',       desc:'Recibe 50 likes',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`},
+  {id:'inspiracion',color:'#2196f3',label:'Inspiración',    desc:'10 likes en total',
+   icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>`},
+];
+
+let tabActiva='cursos';
+let fotoNueva=null;
+
+function switchTab(tab,btn){
+  tabActiva=tab;
+  document.querySelectorAll('.mtab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+tab)?.classList.add('active');
+}
+
+function _buildHistorial(u, ins, mios){
+  const eventos=[];
+  const colors={basico:'#e84a22',intermedio:'#AA1739',avanzado:'#e84a22'};
+
+  // Lecciones completadas
+  ['basico','intermedio','avanzado'].forEach(nivel=>{
+    const p=getProgreso(nivel);
+    if(p.completadas.length>0){
+      eventos.push({icon:'📚',texto:`Completaste ${p.completadas.length} lección${p.completadas.length!==1?'es':''} del Nivel ${nivel.charAt(0).toUpperCase()+nivel.slice(1)}`,tiempo:'Reciente',color:colors[nivel]});
+    }
+  });
+
+  // Insignias ganadas
+  ins.slice(-2).reverse().forEach(id=>{
+    const NAMES={puntada:'Primera puntada',fotografa:'Fotógrafa',comentarista:'Comentarista',creadora:'Creadora',favorita:'Favorita',inspiracion:'Inspiración'};
+    eventos.push({icon:'🏅',texto:`Ganaste la insignia "${NAMES[id]||id}"`,tiempo:'Recientemente',color:'#ff9800'});
+  });
+
+  // Proyectos publicados
+  mios.slice(0,2).forEach(p=>{
+    eventos.push({icon:'📸',texto:`Publicaste "${p.titulo}" en la comunidad`,tiempo:p.tiempo,color:'#AA1739'});
+  });
+
+  // Si no hay nada
+  if(eventos.length===0){
+    return `<p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio);text-align:center;padding:.5rem 0">Completa lecciones y publica proyectos para ver tu actividad aquí.</p>`;
+  }
+
+  return eventos.slice(0,5).map(e=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--gris-borde)">
+      <div style="width:32px;height:32px;border-radius:50%;background:${e.color};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.85rem">${e.icon}</div>
+      <div style="flex:1">
+        <p style="font-family:var(--fu);font-size:.8rem;color:var(--naranja);line-height:1.4">${e.texto}</p>
+        <p style="font-family:var(--fu);font-size:.7rem;color:#bbb;margin-top:2px">${e.tiempo}</p>
+      </div>
+    </div>`).join('');
+}
+
+function renderPagina(){
+  const u=getUsuario();
+  const cont=document.getElementById('pageContent');
+  if(!u){
+    cont.innerHTML=`<div class="no-sesion fade-up">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <h2>Inicia sesión</h2>
+      <p>Accede a tu perfil, sigue tu progreso y gestiona tus proyectos.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn-primary" onclick="abrirLogin()">Iniciar sesión</button>
+        <button class="btn-outline" onclick="abrirRegistro()">Registrarse gratis</button>
+      </div>
+    </div>`;
+    initFadeUp();return;
+  }
+
+  const prog=Object.fromEntries(Object.keys(NIVEL_INFO).map(k=>[k,getProgreso(k)]));
+  const mios=getPosts().filter(p=>p.isOwn);
+  const ins=getInsignias();
+  const patronesDesbloqueados=getPatrones();
+
+  // Niveles progress cards
+  const nivelIcons={
+    basico:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
+    intermedio:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>`,
+    avanzado:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  };
+  const nivelesHTML=Object.entries(NIVEL_INFO).map(([key,info])=>{
+    const p=prog[key];
+    const done=p.completadas.length;
+    const pct=Math.round((done/info.total)*100);
+    const esActivo=done>0||(key==='basico');
+    return `<div class="nivel-card${esActivo?' activo':''}">
+      <div class="nivel-thumb" style="background:${info.color}">${nivelIcons[key]}</div>
+      <h4>Nivel ${info.label}</h4>
+      <p class="estado">${done>0?`${done} de ${info.total} lecciones`:key==='basico'?'Empieza tu primera lección':'0 lecciones completadas'}</p>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${info.color}"></div></div>
+      <p class="prog-pct" style="color:${info.color}">${pct}% completado</p>
+    </div>`;
+  }).join('');
+
+  // Cursos panel
+  const cursosPanel=`
+    <h3 style="font-family:var(--ft);font-size:1.15rem;color:var(--naranja);margin-bottom:18px">Mis cursos</h3>
+    ${Object.entries(NIVEL_INFO).map(([key,info])=>{
+      const p=prog[key];
+      const done=p.completadas.length;
+      const pct=Math.round((done/info.total)*100);
+      return `<div class="curso-item" onclick="window.location.href='cursos.html'">
+        <div class="curso-thumb-mini" style="background:${info.bg}"></div>
+        <div class="curso-item-info">
+          <h4>Nivel ${info.label}</h4>
+          <p class="ci-meta">${done} de ${info.total} lecciones${done>0?` · Última: lección ${done}`:'  · Sin comenzar'}</p>
+          <div class="ci-bar"><div class="ci-fill" style="width:${pct}%;background:${info.color}"></div></div>
+          <p class="ci-pct" style="color:${info.color}">${pct}% completado</p>
+        </div>
+        <a href="cursos.html" class="btn-continuar">${done>0?'Continuar':'Empezar'}</a>
+      </div>`;
+    }).join('')}`;
+
+  // Patrones panel
+  const patronesPanel=patronesDesbloqueados.length===0?`
+    <div class="empty-panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <p>Aún no tienes patrones desbloqueados.<br><a href="cursos.html" style="color:var(--naranja);font-weight:700">Completa un nivel</a> para ganar patrones gratuitos.</p>
+    </div>`:`
+    <h3 style="font-family:var(--ft);font-size:1.15rem;color:var(--naranja);margin-bottom:18px">Mis patrones desbloqueados</h3>
+    <div class="patrones-grid">
+      ${patronesDesbloqueados.map(p=>`<div class="patron-item">
+        <div class="patron-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="patron-body">
+          <h5>Patrón ${p.nombre}</h5>
+          <p>Desbloqueado: ${p.fecha}</p>
+          <button class="btn-dl-sm" onclick="descargar('${p.file}','${p.nombre}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar PDF
+          </button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+
+  // Proyectos panel
+  const proyectosPanel=mios.length===0?`
+    <div class="empty-panel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <p>Aún no has publicado proyectos.<br><a href="comunidad.html" style="color:var(--naranja);font-weight:700">Comparte tu primera creación</a></p>
+    </div>`:`
+    <h3 style="font-family:var(--ft);font-size:1.15rem;color:var(--naranja);margin-bottom:18px">Mis proyectos publicados</h3>
+    <div class="proy-grid">
+      ${mios.map(p=>`<div class="proy-card">
+        <div class="proy-img">${p.img?`<img src="${p.img}" alt="${p.titulo}" onerror="this.style.display='none'">`:
+          `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`}
+        </div>
+        <div class="proy-body"><h5>${p.titulo}</h5><p>${p.likes} likes · ${p.comentarios.length} comentarios</p></div>
+      </div>`).join('')}
+    </div>`;
+
+  // Insignias sidebar
+  const insGridHTML=INSIGNIAS.map(b=>{
+    const earned=ins.includes(b.id);
+    return `<div class="ins-item ${earned?'earned':'bloqueada'}">
+      <div class="ins-icon-wrap" style="background:${earned?b.color:'#eee'}">${b.icon}</div>
+      <p class="ins-nm">${b.label}</p>
+    </div>`;
+  }).join('');
+
+  const siguiente=INSIGNIAS.find(b=>!ins.includes(b.id));
+  const proximaHTML=siguiente?`
+    <div class="proxima-ins">
+      <h5>Próxima insignia</h5>
+      <p>${siguiente.desc}</p>
+      <div class="prog-bar"><div class="prog-fill" style="width:${Math.min(100,(ins.length/INSIGNIAS.length)*100)}%;background:${siguiente.color}"></div></div>
+      <p class="prox-pct">${ins.length} de ${INSIGNIAS.length} insignias</p>
+    </div>`:
+    `<div class="proxima-ins"><h5>Todas completadas</h5><p>Has ganado todas las insignias disponibles. ¡Felicitaciones!</p></div>`;
+
+  cont.innerHTML=`
+    <!-- BANNER PERFIL -->
+    <div class="perfil-banner fade-up">
+      <div class="avatar-grande" onclick="abrirAjustes()" title="Ajustes de perfil">
+        ${u.avatar?`<img src="${u.avatar}">`:`${u.nombre[0].toUpperCase()}`}
+      </div>
+      <div class="perfil-info">
+        <h1>${u.nombre}</h1>
+        <div class="nivel-pill">Nivel Básico · En progreso</div>
+        <div class="perfil-stats">
+          <div class="p-stat"><span class="num">${mios.length}</span><span class="lab">Proyectos</span></div>
+          <div class="p-stat"><span class="num">${ins.length}</span><span class="lab">Insignias</span></div>
+          <div class="p-stat"><span class="num">${patronesDesbloqueados.length}</span><span class="lab">Patrones</span></div>
+          <div class="p-stat"><span class="num">${u.puntos||0}</span><span class="lab">Puntos</span></div>
+        </div>
+      </div>
+      <div class="perfil-acciones">
+        <button class="btn-ajustes" onclick="abrirAjustes()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Ajustes
+        </button>
+      </div>
+    </div>
+
+    <!-- PROGRESO NIVELES -->
+    <div class="progreso-banner fade-up">
+      <div class="prog-header"><h3>Mi progreso por nivel</h3><p>Avanza en los cursos para desbloquear patrones y recompensas</p></div>
+      <div class="niveles-grid">${nivelesHTML}</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="mis-tabs">
+      <div class="mis-tabs-left">
+        <button class="mtab-btn active" id="tab-cursos" onclick="switchTab('cursos',this)">Mis cursos</button>
+        <button class="mtab-btn" id="tab-patrones" onclick="switchTab('patrones',this)">Mis patrones</button>
+        <button class="mtab-btn" id="tab-proyectos" onclick="switchTab('proyectos',this)">Mis proyectos</button>
+      </div>
+      <button class="btn-nuevo" onclick="window.location.href='comunidad.html'">Nuevo proyecto</button>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="mis-layout">
+      <div>
+        <div class="panel active" id="panel-cursos">${cursosPanel}</div>
+        <div class="panel" id="panel-patrones">${patronesPanel}</div>
+        <div class="panel" id="panel-proyectos">${proyectosPanel}</div>
+      </div>
+      <div>
+        <!-- INSIGNIAS -->
+        <div class="ins-sidebar fade-up">
+          <h3>Mis insignias</h3>
+          <p>Gana insignias participando en la comunidad y completando niveles.</p>
+          <div class="ins-grid">${insGridHTML}</div>
+          ${proximaHTML}
+        </div>
+      </div>
+    </div>`;
+
+  initFadeUp();
+}
+
+function abrirAjustes(){
+  const u=getUsuario();if(!u)return;
+  document.getElementById('ajNombre').value=u.nombre;
+  document.getElementById('ajEmail').value=u.email;
+  const av=document.getElementById('ajustesAvatar');
+  av.innerHTML=u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`${u.nombre[0].toUpperCase()}`;
+  fotoNueva=null;
+  document.getElementById('modalAjustes').classList.add('open');
+}
+const cerrarAjustes=()=>document.getElementById('modalAjustes').classList.remove('open');
+
+function previewFoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    fotoNueva=ev.target.result;
+    document.getElementById('ajustesAvatar').innerHTML=`<img src="${fotoNueva}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function guardarAjustes(e){
+  e.preventDefault();
+  const u=getUsuario();if(!u)return;
+  u.nombre=document.getElementById('ajNombre').value.trim();
+  u.email=document.getElementById('ajEmail').value.trim();
+  if(fotoNueva) u.avatar=fotoNueva;
+  setUsuario(u);
+  // Update in usuarios list
+  const lista=getUsuarios();
+  const idx=lista.findIndex(x=>x.id===u.id);
+  if(idx!==-1){lista[idx]=u;setUsuarios(lista);}
+  cerrarAjustes();actualizarNav();renderPagina();
+  toast('Perfil actualizado correctamente.','ok');
+}
+
+function descargar(file,nombre){
+  const a=document.createElement('a');
+  a.href=file; a.download=`KeyChet_Patron_${nombre}.pdf`; a.click();
+  toast(`Descargando patrón ${nombre}...`,'ok');
+}
+
+function resetTodo(){
+  if(!confirm('¿Borrar TODOS los datos de prueba? Esto eliminará usuarios, progreso, publicaciones y sesión.')) return;
+  localStorage.clear();
+  toast('Datos borrados. Recarga la página para empezar desde cero.','info');
+  setTimeout(()=>location.reload(),1800);
+}
+
+function onLoginSuccess(){ renderPagina(); }
+
+document.addEventListener('DOMContentLoaded',()=>{
+  renderPagina();
+  document.querySelectorAll('.modal-overlay').forEach(m=>
+    m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');})
+  );
+});
+</script>
+</body>
+</html>

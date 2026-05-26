@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayuda – Key Chet</title>
+  <link rel="stylesheet" href="css/kc.css">
+  <style>
+    .ayuda-hero{box-shadow:0 6px 18px 0 rgba(0,0,0,0.10);position:relative;z-index:2;background:var(--crema-suave);padding:56px 48px;text-align:center;}
+    .ayuda-hero h1{font-family:var(--ft);font-size:2.6rem;color:var(--naranja);margin-bottom:12px;}
+    .ayuda-hero p{font-size:1rem;color:var(--gris-medio);margin-bottom:28px;}
+    .ayuda-search{display:flex;align-items:center;gap:10px;background:white;border:2.5px solid var(--naranja);border-radius:999px;padding:10px 22px;max-width:520px;margin:0 auto;box-shadow:0 4px 20px rgba(232,74,34,.1);}
+    .ayuda-search input{border:none;outline:none;font-family:var(--fu);font-size:.95rem;width:100%;background:transparent;color:var(--naranja);}
+    .ayuda-search input::placeholder{color:#bbb;}
+    .ayuda-search svg{width:20px;height:20px;color:var(--naranja);flex-shrink:0;}
+    /* CATEGORÍAS */
+    .cats-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;padding:28px 48px 0;}
+    .cat-chip{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:999px;border:2px solid var(--gris-borde);background:white;font-family:var(--fu);font-size:.84rem;font-weight:700;color:var(--gris-medio);cursor:pointer;transition:var(--trans);}
+    .cat-chip:hover,.cat-chip.active{background:var(--naranja);color:white;border-color:var(--naranja);}
+    .cat-chip svg{width:15px;height:15px;}
+    /* LAYOUT */
+    .ayuda-layout{display:grid;grid-template-columns:220px 1fr;gap:0;max-width:1100px;margin:36px auto;padding:0 24px;}
+    /* SIDEBAR */
+    .ayuda-nav{padding-right:32px;}
+    .ayuda-nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;font-family:var(--fu);font-size:.86rem;font-weight:600;color:var(--gris-medio);cursor:pointer;transition:var(--trans);margin-bottom:4px;border:none;background:transparent;width:100%;text-align:left;}
+    .ayuda-nav-item svg{width:16px;height:16px;flex-shrink:0;}
+    .ayuda-nav-item:hover{background:var(--crema-suave);color:var(--naranja);}
+    .ayuda-nav-item.active{background:rgba(232,74,34,.1);color:var(--naranja);font-weight:700;}
+    /* FAQ */
+    .faq-section{margin-bottom:48px;}
+    .faq-section h2{font-family:var(--ft);font-size:1.4rem;font-weight:700;color:var(--naranja);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+    .faq-section h2 svg{width:22px;height:22px;}
+    .faq-item{background:white;border:2px solid var(--gris-borde);border-radius:16px;margin-bottom:10px;transition:border-color .2s;}
+    .faq-item:hover{border-color:var(--crema-oscuro);}
+    .faq-item.open{border-color:var(--naranja);}
+    .faq-q{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;cursor:pointer;font-family:var(--ft);font-size:.97rem;font-weight:700;color:var(--naranja);}
+    .faq-q .chevron{width:20px;height:20px;flex-shrink:0;color:var(--gris-medio);transition:transform .25s;}
+    .faq-item.open .chevron{transform:rotate(180deg);color:var(--naranja);}
+    .faq-a{display:none;padding:0 20px 18px;font-size:.9rem;color:var(--gris-medio);line-height:1.75;}
+    .faq-item.open .faq-a{display:block;}
+    .faq-a a{color:var(--naranja);font-weight:700;}
+    .faq-a ul{margin:8px 0 0 18px;}
+    .faq-a li{margin-bottom:4px;}
+    /* CONTACTO */
+    .contacto-box{background:var(--crema-suave);border-radius:20px;padding:32px;border:2px solid var(--crema-oscuro);text-align:center;margin-top:40px;}
+    .contacto-box h3{font-family:var(--ft);font-size:1.3rem;color:var(--naranja);margin-bottom:8px;}
+    .contacto-box p{font-size:.9rem;color:var(--gris-medio);margin-bottom:20px;}
+    .wa-btn{display:inline-flex;align-items:center;gap:10px;background:#25d366;color:white;padding:13px 28px;border-radius:999px;font-family:var(--fu);font-size:.92rem;font-weight:700;border:none;cursor:pointer;transition:var(--trans);}
+    .wa-btn:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(37,211,102,.4);}
+    .wa-btn svg{width:20px;height:20px;fill:white;}
+    @media(max-width:768px){
+      .ayuda-hero{padding:40px 24px;}
+      .cats-row{padding:20px 24px 0;}
+      .ayuda-layout{grid-template-columns:1fr;padding:0 20px;}
+      .ayuda-nav{display:none;}
+    }
+  </style>
+</head>
+<body>
+<script>const PAGE_TITLE='Ayuda';</script>
+<nav id="main-nav"></nav>
+
+<div class="ayuda-hero">
+  <p class="section-label">Centro de ayuda</p>
+  <h1>¿En qué te podemos ayudar?</h1>
+  <p>Encuentra respuestas a las preguntas más frecuentes sobre Key Chet.</p>
+  <div class="ayuda-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" placeholder="Busca tu pregunta..." onkeydown="if(event.key==='Enter')window.location.href='buscar.html?q='+encodeURIComponent(this.value)" oninput="filtrarFAQ(this.value)">
+  </div>
+</div>
+
+<div class="cats-row">
+  <button class="cat-chip active" onclick="verCategoria('todo',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Todo
+  </button>
+  <button class="cat-chip" onclick="verCategoria('cursos',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    Cursos
+  </button>
+  <button class="cat-chip" onclick="verCategoria('compras',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Compras
+  </button>
+  <button class="cat-chip" onclick="verCategoria('cuenta',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Cuenta
+  </button>
+  <button class="cat-chip" onclick="verCategoria('comunidad',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Comunidad
+  </button>
+</div>
+
+<div class="ayuda-layout">
+  <!-- SIDEBAR -->
+  <div class="ayuda-nav">
+    <button class="ayuda-nav-item active" onclick="irA('cursos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Cursos
+    </button>
+    <button class="ayuda-nav-item" onclick="irA('compras',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Compras y pagos
+    </button>
+    <button class="ayuda-nav-item" onclick="irA('cuenta',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Cuenta y perfil
+    </button>
+    <button class="ayuda-nav-item" onclick="irA('comunidad',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+      Comunidad
+    </button>
+    <button class="ayuda-nav-item" onclick="irA('patrones',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Patrones PDF
+    </button>
+    <button class="ayuda-nav-item" onclick="irA('materiales',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
+      Materiales
+    </button>
+  </div>
+
+  <!-- FAQ -->
+  <div id="faqContent">
+
+    <!-- CURSOS -->
+    <div class="faq-section" id="sec-cursos" data-cat="cursos">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Cursos
+      </h2>
+
+      <div class="faq-item" id="inscripcion">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo me inscribo al Nivel Intermedio o Avanzado?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          El Nivel Básico es completamente gratuito. Para acceder al Intermedio ($25.000) o Avanzado ($45.000) haz clic en el botón <strong>"Desbloquear nivel"</strong> dentro de la sección de Cursos y serás redirigida automáticamente a WhatsApp con el mensaje listo. Ahí te explicamos cómo hacer el pago.
+        </div>
+      </div>
+
+      <div class="faq-item" id="descuento">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo aplico mi descuento del 10%?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Al completar todas las lecciones de un nivel, aparece una pantalla de recompensa donde puedes escoger el <strong>10% de descuento</strong> para el siguiente nivel. Al seleccionarlo, serás redirigida a WhatsApp con un mensaje que indica tu descuento. Solo preséntalo al hacer tu pago.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Puedo ver los cursos sin conexión a internet?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          El sitio web funciona sin internet si lo descargas en tu computador. Sin embargo, los videos de las lecciones requieren conexión para verse. Los patrones PDF que hayas descargado sí funcionan sin internet.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Mi progreso se guarda si cierro el navegador?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Sí, siempre que hayas iniciado sesión con tu cuenta. El progreso se guarda automáticamente en tu dispositivo. Si cambias de computador, necesitas iniciar sesión de nuevo con el mismo correo para sincronizar.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cuánto tiempo tengo para completar un nivel?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          ¡El tiempo que necesites! Los cursos son 100% a tu ritmo, sin fechas límite. Puedes pausar y retomar cuando quieras.
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPRAS -->
+    <div class="faq-section" id="sec-compras" data-cat="compras">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Compras y pagos
+      </h2>
+
+      <div class="faq-item" id="carrito">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo funciona el carrito de compras?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Agrega los productos que te interesen al carrito con el botón <strong>"+ Agregar"</strong>. Cuando estés lista, haz clic en el ícono del carrito y luego en <strong>"Finalizar compra"</strong>. Se abrirá WhatsApp con un mensaje que detalla todo tu pedido y el total, listo para enviar.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Qué métodos de pago aceptan?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Coordinamos el pago directamente por WhatsApp. Generalmente aceptamos transferencias bancarias, Nequi, Daviplata y efectivo según disponibilidad. Escríbenos al <a href="#" onclick="wa('general');return false">300 505 9796</a> para más detalles.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Hacen envíos de amigurumis a domicilio?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Sí. Los detalles del envío (costo, tiempo y cobertura) se coordinan por WhatsApp según tu ubicación. Escríbenos para verificar disponibilidad en tu ciudad.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Puedo pedir un amigurumi personalizado?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          ¡Claro! Escríbenos por WhatsApp describiendo lo que quieres (personaje, colores, tamaño) y te enviamos cotización. Los pedidos personalizados tienen un tiempo de elaboración de 1 a 2 semanas dependiendo de la complejidad.
+        </div>
+      </div>
+    </div>
+
+    <!-- CUENTA -->
+    <div class="faq-section" id="sec-cuenta" data-cat="cuenta">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Cuenta y perfil
+      </h2>
+
+      <div class="faq-item" id="cuenta">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo creo mi cuenta?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Haz clic en el botón <strong>"Entrar"</strong> en la barra superior y luego en <strong>"Regístrate gratis"</strong>. Solo necesitas tu nombre, correo y contraseña. Con tu cuenta puedes guardar tu progreso, ganar insignias y publicar proyectos.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo cambio mi foto de perfil o nombre?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Ve a <a href="mis-proyectos.html">Mi perfil</a> y haz clic en el botón <strong>"Ajustes"</strong> (ícono de engranaje). Desde ahí puedes cambiar tu foto, nombre y correo.
+        </div>
+      </div>
+
+      <div class="faq-item" id="insignias">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo gano insignias y puntos?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Los puntos se acumulan así:
+          <ul>
+            <li><strong>+10 puntos</strong> por completar una lección</li>
+            <li><strong>+15 puntos</strong> por publicar un proyecto en la comunidad</li>
+            <li><strong>+5 puntos</strong> por comentar un proyecto</li>
+            <li><strong>+20 puntos</strong> al desbloquear una insignia</li>
+          </ul>
+          Las insignias se desbloquean automáticamente al cumplir sus condiciones (publicar, comentar, recibir likes, etc.).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          Olvidé mi contraseña, ¿qué hago?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Actualmente el restablecimiento de contraseña se hace por WhatsApp. Escríbenos con tu correo registrado al <a href="#" onclick="wa('ayuda',{pregunta:'Olvidé mi contraseña.'});return false">300 505 9796</a> y te ayudamos.
+        </div>
+      </div>
+    </div>
+
+    <!-- COMUNIDAD -->
+    <div class="faq-section" id="sec-comunidad" data-cat="comunidad">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Comunidad
+      </h2>
+
+      <div class="faq-item" id="publicar">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo publico mi proyecto en la comunidad?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Ve a la sección <a href="comunidad.html">Comunidad</a> y haz clic en <strong>"Publicar mi proyecto"</strong> o <strong>"+ Nuevo proyecto"</strong>. Agrega un título, descripción, el nivel que estás cursando y una foto de tu trabajo. ¡Recibirás +15 puntos al publicar!
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo sigo a otras compañeras?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Haz clic en el nombre o foto de cualquier compañera en la comunidad para ver su perfil. Desde ahí aparece el botón <strong>"Seguir"</strong>. Una vez que la sigues, sus publicaciones aparecen en la pestaña <strong>"Siguiendo"</strong> del feed.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Puedo enlazar mi Instagram?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Sí. Ve a <a href="mis-proyectos.html">Mi perfil → Ajustes</a> y agrega tu usuario de Instagram. Aparecerá en tu perfil público para que tus compañeras puedan seguirte fuera de Key Chet.
+        </div>
+      </div>
+    </div>
+
+    <!-- PATRONES -->
+    <div class="faq-section" id="sec-patrones" data-cat="compras">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Patrones PDF
+      </h2>
+
+      <div class="faq-item" id="patrones">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo descargo un patrón gratuito?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Los patrones gratuitos se desbloquean al completar el nivel correspondiente:
+          <ul>
+            <li><strong>Básico:</strong> Patrón Corazón y Patrón Abeja</li>
+            <li><strong>Intermedio:</strong> Patrón Gato y Patrón Honguito</li>
+            <li><strong>Avanzado:</strong> Patrón Chimuelo</li>
+          </ul>
+          Al completar el nivel, selecciona el patrón como recompensa y se descargará automáticamente. También quedará guardado en <a href="mis-proyectos.html">Mis patrones</a>.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Cómo compro un patrón de venta?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          En la sección <a href="compras.html">Compras → Patrones PDF</a> haz clic en <strong>"Agregar"</strong> en el patrón que quieras. Cuando finalices desde el carrito, serás redirigida a WhatsApp con el resumen del pedido y el valor a pagar.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿En qué formato vienen los patrones?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Todos los patrones son en formato <strong>PDF</strong>. Incluyen las abreviaturas, vueltas numeradas e imágenes del proceso. Se pueden ver en el celular, tablet o computador con cualquier lector de PDF.
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERIALES -->
+    <div class="faq-section" id="sec-materiales" data-cat="cursos">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>
+        Materiales
+      </h2>
+
+      <div class="faq-item" id="materiales">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Qué necesito para empezar desde cero?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Para el nivel básico necesitas:
+          <ul>
+            <li><strong>Aguja de crochet</strong> — tamaño 3 mm a 5 mm para empezar</li>
+            <li><strong>Hilo o algodón</strong> — te recomendamos hilo grueso (chunky) para principiantes</li>
+            <li><strong>Relleno</strong> — algodón para rellenar los amigurumis</li>
+            <li><strong>Tijeras y aguja lanera</strong> — para cerrar y coser las piezas</li>
+          </ul>
+          En el Nivel Básico, la primera lección explica en detalle cada material con recomendaciones de compra.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggle(this)">
+          ¿Qué tipo de hilo es mejor para amigurumis?
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="faq-a">
+          Para amigurumis recomendamos <strong>hilo 100% algodón</strong> porque no produce pelusa, es fácil de trabajar y el tejido queda más definido. El <strong>hilo chunky o gordo</strong> es ideal para principiantes porque se ve el avance más rápido. Evita el hilo muy delgado al inicio.
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACTO -->
+    <div class="contacto-box">
+      <h3>¿No encontraste tu respuesta?</h3>
+      <p>Escríbenos directamente por WhatsApp y te respondemos lo más pronto posible.</p>
+      <button class="wa-btn" onclick="wa('general')">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Escribir a WhatsApp
+      </button>
+    </div>
+
+  </div><!-- fin faqContent -->
+</div>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">Key Chet</div>
+      <p>Aprende crochet a tu ritmo. Cursos por niveles, comunidad vibrante y tienda de patrones en un solo lugar.</p>
+      <div class="footer-socials" style="margin-top:16px">
+        <a href="https://www.instagram.com/keychet.co?igsh=MTdrZm80b2w4bDhn&utm_source=qr" target="_blank" class="footer-social-btn" title="Instagram Key Chet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://wa.me/573005059796" class="footer-social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Aprender</h4>
+      <a href="cursos.html">Cursos de crochet</a>
+      <a href="cursos.html">Nivel Básico</a>
+      <a href="cursos.html">Nivel Intermedio</a>
+      <a href="cursos.html">Nivel Avanzado</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explorar</h4>
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="compras.html">Tienda</a>
+      <a href="mis-proyectos.html">Mi perfil</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ayuda</h4>
+      <a href="ayuda.html">Centro de ayuda</a>
+      <a href="ayuda.html#sec-compras">Compras y pagos</a>
+      <a href="ayuda.html#sec-patrones">Patrones PDF</a>
+      <a href="https://wa.me/573005059796">Contáctanos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Key Chet · Hecho con amor y lana en Colombia</p>
+    
+  </div>
+</footer>
+
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarLogin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Bienvenida de nuevo</h2><p class="modal-sub">Entra a tu cuenta Key Chet</p></div>
+    <form onsubmit="iniciarSesion(event)">
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-form">Entrar</button>
+    </form>
+    <p class="modal-switch">¿No tienes cuenta? <a onclick="cerrarLogin();abrirRegistro()">Regístrate gratis</a></p>
+  </div>
+</div>
+<div class="modal-overlay" id="modalRegistro"><div class="modal"><button class="modal-close" onclick="cerrarRegistro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div style="text-align:center;margin-bottom:1.5rem"><h2>Únete a Key Chet</h2><p class="modal-sub">Crea tu cuenta gratis</p></div><form onsubmit="registrar(event)"><div class="form-group"><label>Nombre completo</label><input type="text" id="regNombre" placeholder="Tu nombre" required></div><div class="form-group"><label>Correo electrónico</label><input type="email" id="regEmail" placeholder="tu@correo.com" required></div><div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required></div><button type="submit" class="btn-form">Crear mi cuenta</button></form><p class="modal-switch">¿Ya tienes cuenta? <a onclick="cerrarRegistro();abrirLogin()">Iniciar sesión</a></p></div></div>
+<div class="modal-overlay" id="modalCarrito"><div class="modal" style="max-width:500px"><button class="modal-close" onclick="document.getElementById('modalCarrito').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><h2 style="margin-bottom:1.5rem">Mi carrito</h2><div id="carritoItems" style="max-height:300px;overflow-y:auto;margin-bottom:1rem"></div><div style="padding-top:1rem;border-top:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between"><div><p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio)">Total</p><div style="font-family:var(--ft);font-size:1.5rem;font-weight:700;color:var(--naranja)" id="carritoTotal">$0</div></div><button class="btn-form" style="width:auto;padding:12px 24px;margin-top:0" onclick="finalizarCompra()">Finalizar compra</button></div></div></div>
+
+<script src="js/kc.js"></script>
+<script>
+/* ── TOGGLE FAQ ── */
+function toggle(btn){
+  const item=btn.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+/* ── SCROLL A SECCIÓN ── */
+function irA(id, btn){
+  // Mostrar todas las secciones primero (por si hay filtro activo)
+  document.querySelectorAll('.faq-section').forEach(s=>s.style.display='block');
+  // Actualizar botón activo
+  document.querySelectorAll('.ayuda-nav-item').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  // Scroll con offset para el navbar sticky
+  const el=document.getElementById('sec-'+id);
+  if(el){
+    const top = el.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({top, behavior:'smooth'});
+  }
+}
+
+/* ── FILTRAR POR CATEGORÍA ── */
+function verCategoria(cat,btn){
+  document.querySelectorAll('.cat-chip').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.faq-section').forEach(s=>{
+    if(cat==='todo'||s.dataset.cat===cat) s.style.display='block';
+    else s.style.display='none';
+  });
+}
+
+/* ── FILTRAR FAQ POR TEXTO ── */
+function filtrarFAQ(val){
+  if(!val.trim()){
+    document.querySelectorAll('.faq-item').forEach(el=>el.style.display='block');
+    document.querySelectorAll('.faq-section').forEach(el=>el.style.display='block');
+    return;
+  }
+  const q=val.toLowerCase();
+  document.querySelectorAll('.faq-section').forEach(sec=>{
+    let hayVisible=false;
+    sec.querySelectorAll('.faq-item').forEach(item=>{
+      const texto=(item.querySelector('.faq-q').textContent+item.querySelector('.faq-a').textContent).toLowerCase();
+      const match=texto.includes(q);
+      item.style.display=match?'block':'none';
+      if(match) hayVisible=true;
+    });
+    sec.style.display=hayVisible?'block':'none';
+  });
+}
+
+/* ── ANCHOR HASH ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const hash=window.location.hash.replace('#','');
+  if(hash){
+    const el=document.getElementById(hash);
+    if(el){ el.closest('.faq-item').classList.add('open'); setTimeout(()=>el.scrollIntoView({behavior:'smooth'}),400); }
+  }
+});
+</script>
+</body>
+</html>

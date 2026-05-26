@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda – Key Chet</title>
+  <link rel="stylesheet" href="css/kc.css">
+  <style>
+    /* ── HERO ── */
+    .shop-hero{box-shadow:0 6px 18px 0 rgba(0,0,0,0.10);position:relative;z-index:2;background:var(--crema-suave);padding:48px 24px;}
+    .shop-hero-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr auto;align-items:center;gap:40px;}
+    .hero-label{font-family:var(--fu);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:2.5px;color:var(--fucsia);margin-bottom:10px;}
+    .shop-hero h1{font-family:var(--ft);font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:700;color:var(--naranja);line-height:1.1;margin-bottom:10px;}
+    .shop-hero p{font-size:.95rem;color:var(--gris-medio);line-height:1.6;max-width:420px;}
+    .hero-stats{display:flex;gap:16px;flex-shrink:0;}
+    .stat-box{background:white;border-radius:20px;padding:24px 28px;text-align:center;border:2px solid var(--naranja);min-width:110px;}
+    .stat-box .num{font-family:var(--ft);font-size:2.2rem;font-weight:700;color:var(--naranja);display:block;line-height:1;}
+    .stat-box .lab{font-size:.78rem;color:var(--gris-medio);font-family:var(--fu);font-weight:700;margin-top:5px;display:block;}
+
+    /* ── TABS ── */
+    .shop-tabs{border-bottom:2px solid var(--gris-borde);background:white;padding:0 24px;position:sticky;top:80px;z-index:1;}
+    .shop-tabs-inner{max-width:960px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+    .tabs-left{display:flex;overflow-x:auto;scrollbar-width:none;padding-left:236px;}
+    .tabs-left::-webkit-scrollbar{display:none;}
+    .shop-tab{padding:16px 20px;border:none;background:transparent;font-family:var(--fu);font-size:.88rem;font-weight:700;color:var(--gris-medio);cursor:pointer;border-bottom:3px solid transparent;transition:var(--trans);margin-bottom:-2px;white-space:nowrap;}
+    .shop-tab:hover{color:var(--naranja);}
+    .shop-tab.active{color:var(--naranja);border-bottom-color:var(--naranja);}
+
+    /* ── PAGE LAYOUT ── */
+    .shop-page{max-width:960px;margin:0 auto;padding:36px 24px 64px;display:grid;grid-template-columns:200px 1fr;gap:36px;}
+
+    /* ── SIDEBAR FILTROS ── */
+    .filtros{position:sticky;top:130px;height:fit-content;}
+    .filtros h3{font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--naranja);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+    .filtro-group{margin-bottom:24px;}
+    .filtro-group h4{font-family:var(--fu);font-size:.8rem;font-weight:800;color:var(--gris-medio);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+    .filtro-check{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;}
+    .filtro-check input{accent-color:var(--naranja);width:15px;height:15px;cursor:pointer;}
+    .filtro-check label{font-family:var(--fu);font-size:.84rem;color:var(--gris-medio);cursor:pointer;}
+    .btn-limpiar{width:100%;padding:9px;border-radius:999px;border:2px solid var(--gris-borde);background:white;font-family:var(--fu);font-size:.82rem;font-weight:700;color:var(--gris-medio);cursor:pointer;transition:var(--trans);margin-top:4px;}
+    .btn-limpiar:hover{border-color:var(--naranja);color:var(--naranja);}
+
+    /* ── PRODUCTOS AREA ── */
+    .productos-area{}
+    .area-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+    .area-header h3{font-family:var(--ft);font-size:1.1rem;font-weight:700;color:var(--naranja);}
+    .area-header p{font-size:.82rem;color:var(--gris-medio);font-family:var(--fu);}
+    .sort-sel{border:2px solid var(--gris-borde);border-radius:999px;padding:7px 16px;font-family:var(--fu);font-size:.82rem;outline:none;color:var(--naranja);cursor:pointer;transition:border-color .2s;}
+    .sort-sel:focus{border-color:var(--naranja);}
+
+    /* ── SECCIÓN SEPARADOR ── */
+    .sec-sep{font-family:var(--ft);font-size:.95rem;font-weight:700;color:var(--naranja);margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid var(--gris-borde);display:flex;align-items:center;gap:8px;}
+    .sec-sep svg{width:17px;height:17px;}
+
+    /* ── PRODUCT GRID — 2 cols ── */
+    .prod-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:8px;}
+
+    /* ── TARJETA AMIGURUMI — imagen dominante ── */
+    .prod-card{background:white;border-radius:18px;border:2px solid var(--gris-borde);transition:var(--trans);display:flex;flex-direction:column;}
+    .prod-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(232,74,34,.14);border-color:var(--naranja);}
+    .prod-img{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--crema-suave);position:relative;flex-shrink:0;}
+    .prod-img img{width:100%;height:100%;object-fit:contain;padding:16px;transition:transform .5s;}
+    .prod-card:hover .prod-img img{transform:scale(1.07);}
+    .prod-badges{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;}
+    .prod-badge{padding:3px 10px;border-radius:999px;font-family:var(--fu);font-size:.68rem;font-weight:700;background:white;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+    .prod-badge.nivel{color:var(--naranja);}
+    .prod-fav{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.1);cursor:pointer;border:none;transition:var(--trans);}
+    .prod-fav:hover{transform:scale(1.15);}
+    .prod-fav svg{width:15px;height:15px;color:var(--gris-medio);}
+    .prod-fav.faved svg{color:var(--naranja);fill:var(--naranja);}
+    .prod-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;}
+    .prod-body h4{font-family:var(--ft);font-size:1rem;font-weight:700;color:var(--naranja);margin-bottom:4px;}
+    .prod-desc{font-size:.8rem;color:var(--gris-medio);line-height:1.5;margin-bottom:14px;flex:1;}
+    .prod-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;}
+    .prod-precio{font-family:var(--ft);font-size:1.2rem;font-weight:700;color:var(--naranja);}
+    .btn-add{display:flex;align-items:center;gap:6px;background:var(--naranja);color:white;border:none;padding:9px 18px;border-radius:999px;font-family:var(--fu);font-size:.8rem;font-weight:700;cursor:pointer;transition:var(--trans);}
+    .btn-add:hover{transform:scale(1.04);box-shadow:0 6px 16px rgba(232,74,34,.35);}
+    .btn-add svg{width:13px;height:13px;}
+
+    /* ── TARJETA PDF — 2 cols también pero más compacta ── */
+    .pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px;}
+    .pdf-card{background:white;border-radius:16px;border:2px solid var(--gris-borde);overflow:hidden;transition:var(--trans);display:flex;align-items:center;gap:0;}
+    .pdf-card:hover{border-color:var(--naranja);box-shadow:0 8px 24px rgba(232,74,34,.1);transform:translateY(-3px);}
+    .pdf-left{width:72px;min-width:72px;align-self:stretch;display:flex;align-items:center;justify-content:center;background:var(--crema-suave);}
+    .pdf-left svg{width:28px;height:28px;color:var(--naranja);opacity:.5;}
+    .pdf-body{padding:14px 14px 14px 0;flex:1;}
+    .pdf-body h4{font-family:var(--ft);font-size:.88rem;font-weight:700;color:var(--naranja);margin-bottom:3px;}
+    .pdf-body p{font-size:.72rem;color:var(--gris-medio);line-height:1.4;margin-bottom:10px;}
+    .pdf-footer{display:flex;align-items:center;justify-content:space-between;}
+    .pdf-precio{font-family:var(--ft);font-size:.95rem;font-weight:700;}
+    .pdf-precio.gratis{color:#2d7d46;}
+    .pdf-precio.venta{color:var(--naranja);}
+    .btn-pdf{display:flex;align-items:center;gap:4px;border:none;padding:5px 12px;border-radius:999px;font-family:var(--fu);font-size:.72rem;font-weight:700;cursor:pointer;transition:var(--trans);}
+    .btn-pdf svg{width:12px;height:12px;}
+    .btn-dl{background:var(--naranja);color:white;}
+    .btn-dl:hover{transform:scale(1.05);}
+    .btn-lock{background:var(--gris-claro);color:var(--gris-medio);}
+    .btn-buy{background:var(--fucsia);color:white;}
+    .btn-buy:hover{transform:scale(1.05);}
+
+    /* ── EMPTY ── */
+    .empty-area{text-align:center;padding:4rem;color:var(--gris-medio);grid-column:1/-1;}
+    .empty-area p{font-family:var(--fu);font-size:.9rem;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:860px){
+      .shop-hero-inner{grid-template-columns:1fr;}.hero-stats{display:none;}
+      .shop-tabs{top:68px;padding:0 16px;}
+      .shop-page{grid-template-columns:1fr;padding:20px 16px 48px;}
+      .filtros{position:static;display:none;}
+      .prod-grid,.pdf-grid{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:480px){.prod-grid,.pdf-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<script>const PAGE_TITLE='Compras';</script>
+<nav id="main-nav"></nav>
+
+<!-- HERO -->
+<div class="shop-hero">
+  <div class="shop-hero-inner fade-up">
+    <div>
+      <p class="hero-label">Tienda Key Chet</p>
+      <h1>Amigurumis y patrones<br>para cada nivel.</h1>
+      <p>Lleva a casa un amigurumi tejido a mano o descarga un patrón PDF. Todo hecho con amor en Colombia.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="num">20</span><span class="lab">amigurumis</span></div>
+      <div class="stat-box"><span class="num">12</span><span class="lab">patrones</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE LAYOUT -->
+<div class="shop-page">
+
+  <!-- FILTROS SIDEBAR -->
+  <div class="filtros fade-up">
+    <h3>Filtros</h3>
+    <div class="filtro-group">
+      <h4>Categoría</h4>
+      <label class="filtro-check"><input type="checkbox" id="chkLlaveros" checked onchange="render()"><label>Llaveros</label></label>
+      <label class="filtro-check"><input type="checkbox" id="chkAnimales" checked onchange="render()"><label>Animales</label></label>
+      <label class="filtro-check"><input type="checkbox" id="chkAmis" checked onchange="render()"><label>Amigurumis</label></label>
+      <label class="filtro-check"><input type="checkbox" id="chkPDFs" checked onchange="render()"><label>Patrones PDF</label></label>
+    </div>
+    <div class="filtro-group">
+      <h4>Precio PDF</h4>
+      <label class="filtro-check"><input type="checkbox" id="chkGratis" checked onchange="render()"><label>Gratuitos</label></label>
+      <label class="filtro-check"><input type="checkbox" id="chkVenta" checked onchange="render()"><label>De venta</label></label>
+    </div>
+    <button class="btn-limpiar" onclick="limpiarFiltros()">Limpiar filtros</button>
+  </div>
+
+  <!-- PRODUCTOS -->
+  <div class="productos-area">
+    <div class="area-header">
+      <div><h3>Productos disponibles</h3><p id="contador">Cargando...</p></div>
+      <select class="sort-sel" id="sortSel" onchange="render()">
+        <option value="default">Orden por defecto</option>
+        <option value="az">Nombre A–Z</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+      </select>
+    </div>
+    <div id="prodContainer"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">Key Chet</div>
+      <p>Aprende crochet a tu ritmo. Cursos por niveles, comunidad vibrante y tienda de patrones en un solo lugar.</p>
+      <div class="footer-socials" style="margin-top:16px">
+        <a href="https://www.instagram.com/keychet.co?igsh=MTdrZm80b2w4bDhn&utm_source=qr" target="_blank" class="footer-social-btn" title="Instagram Key Chet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://wa.me/573005059796" class="footer-social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Aprender</h4>
+      <a href="cursos.html">Cursos de crochet</a>
+      <a href="cursos.html">Nivel Básico</a>
+      <a href="cursos.html">Nivel Intermedio</a>
+      <a href="cursos.html">Nivel Avanzado</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explorar</h4>
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="compras.html">Tienda</a>
+      <a href="mis-proyectos.html">Mi perfil</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ayuda</h4>
+      <a href="ayuda.html">Centro de ayuda</a>
+      <a href="ayuda.html#sec-compras">Compras y pagos</a>
+      <a href="ayuda.html#sec-patrones">Patrones PDF</a>
+      <a href="https://wa.me/573005059796">Contáctanos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Key Chet · Hecho con amor y lana en Colombia</p>
+    
+  </div>
+</footer>
+
+<!-- MODALES AUTH -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarLogin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Bienvenida de nuevo</h2><p class="modal-sub">Entra a tu cuenta Key Chet</p></div>
+    <form onsubmit="iniciarSesion(event)">
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-form">Entrar</button>
+    </form>
+    <p class="modal-switch">¿No tienes cuenta? <a onclick="cerrarLogin();abrirRegistro()">Regístrate gratis</a></p>
+  </div>
+</div>
+<div class="modal-overlay" id="modalRegistro"><div class="modal"><button class="modal-close" onclick="cerrarRegistro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div style="text-align:center;margin-bottom:1.5rem"><h2>Únete a Key Chet</h2><p class="modal-sub">Crea tu cuenta gratis</p></div><form onsubmit="registrar(event)"><div class="form-group"><label>Nombre completo</label><input type="text" id="regNombre" placeholder="Tu nombre" required></div><div class="form-group"><label>Correo electrónico</label><input type="email" id="regEmail" placeholder="tu@correo.com" required></div><div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required></div><button type="submit" class="btn-form">Crear mi cuenta</button></form><p class="modal-switch">¿Ya tienes cuenta? <a onclick="cerrarRegistro();abrirLogin()">Iniciar sesión</a></p></div></div>
+
+<!-- MODAL CARRITO -->
+<div class="modal-overlay" id="modalCarrito">
+  <div class="modal" style="max-width:520px">
+    <button class="modal-close" onclick="document.getElementById('modalCarrito').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h2 style="margin-bottom:1.5rem">Mi carrito</h2>
+    <div id="carritoItems" style="max-height:320px;overflow-y:auto;margin-bottom:1rem"></div>
+    <div style="padding-top:1rem;border-top:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between;gap:1rem">
+      <div><p style="font-family:var(--fu);font-size:.8rem;color:var(--gris-medio)">Total</p><div style="font-family:var(--ft);font-size:1.5rem;font-weight:700;color:var(--naranja)" id="carritoTotal">$0</div></div>
+      <button class="btn-form" style="width:auto;padding:12px 24px;margin-top:0" onclick="finalizarCompra()">Finalizar compra</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/kc.js"></script>
+<script>
+const AMIGURUMIS=[
+  {id:1,  nombre:'Abejita pequeña',    cats:['llaveros'], img:'img/productos/abejita.png',      precio:15000, nivel:'basico',     desc:'Abejita en hilo 100% algodón. Perfecta como llavero.'},
+  {id:2,  nombre:'Sapito Matero',      cats:['animales'], img:'img/productos/sapito_matero.png',precio:30000, nivel:'intermedio', desc:'Ranita esponjosa con sombrerito. Hilo grueso premium.'},
+  {id:3,  nombre:'Patito lindo',       cats:['animales'], img:'img/productos/patito.png',       precio:30000, nivel:'basico',     desc:'Patito con sombrerito a juego. Hilo chunky ultra suave.'},
+  {id:4,  nombre:'Gatito persa',       cats:['llaveros'], img:'img/productos/gatito.png',       precio:15000, nivel:'intermedio', desc:'Gatito blanco con detalles bordados y ojos tipo joya.'},
+  {id:5,  nombre:'Sapito verde',       cats:['llaveros'], img:'img/productos/sapito.png',       precio:15000, nivel:'basico',     desc:'Ranita chunky con expresión traviesa.'},
+  {id:6,  nombre:'Tortuga girasol',    cats:['llaveros'], img:'img/productos/tortuga.png',      precio:16000, nivel:'basico',     desc:'Tortuguita llavero con caparazón de girasol.'},
+  {id:7,  nombre:'Luffy One Piece',    cats:['amigurumis'],img:'img/productos/one_piece.png',   precio:80000, nivel:'avanzado',   desc:'Muñeco Luffy articulado con ropa tejida.'},
+  {id:8,  nombre:'Dinosaurio Rex',     cats:['animales'], img:'img/productos/dinosaurio.png',   precio:25000, nivel:'basico',     desc:'Dino verde con cresta.'},
+  {id:9,  nombre:'Delfín rosa',        cats:['llaveros'], img:'img/productos/delfin.png',       precio:14000, nivel:'basico',     desc:'Delfincito rosado en algodón premium.'},
+  {id:10, nombre:'Yama (Llama)',       cats:['animales'], img:'img/productos/yama.png',         precio:35000, nivel:'basico',     desc:'Llamita con manta colorida.'},
+  {id:11, nombre:'Perrito Schnauzer',  cats:['animales'], img:'img/productos/perrito.png',      precio:50000, nivel:'avanzado',   desc:'Schnauzer con bigotito blanco y orejas esponjosas.'},
+  {id:12, nombre:'Virgen de Guadalupe',cats:['amigurumis'],img:'img/productos/virgen.png',      precio:80000, nivel:'intermedio', desc:'Tejida con detalle y amor.'},
+  {id:13, nombre:'Chihuahua',          cats:['animales'], img:'img/productos/chihuahua.png',    precio:50000, nivel:'intermedio', desc:'Chihuahua con pañuelito morado.'},
+];
+const PATRON_LIBRES=[
+  {id:'corazon', nombre:'Patrón Corazón',  nivel:'basico',     file:'patrones/patron_corazon.pdf',  desc:'Pieza base para practicar aumentos y disminuciones.'},
+  {id:'abeja',   nombre:'Patrón Abeja',    nivel:'basico',     file:'patrones/patron_abeja.pdf',    desc:'Abeja rayada en dos colores. Incluye alas.'},
+  {id:'gato',    nombre:'Patrón Gato',     nivel:'intermedio', file:'patrones/patron_gato.pdf',     desc:'Gato amigurumi con corazón. Incluye colita y brazos.'},
+  {id:'honguito',nombre:'Patrón Honguito', nivel:'intermedio', file:'patrones/patron_honguito.pdf', desc:'Hongo con sombrero y punto burbuja.'},
+  {id:'chimuelo',nombre:'Patrón Chimuelo', nivel:'avanzado',   file:'patrones/patron_chimuelo.pdf', desc:'Dragón articulado con cola, alas, orejas y columna.'},
+];
+const PATRON_VENTA=[
+  {id:'stitch',  nombre:'Patrón Stitch',  nivel:'avanzado', file:'patrones/patron_stitch.pdf',   precio:14000, desc:'Stitch completo con orejas bicolor y pies con uñas.'},
+  {id:'merida',  nombre:'Patrón Mérida',  nivel:'avanzado', file:'patrones/patron_merida.pdf',   precio:18000, desc:'Mérida con cabello rizado, vestido, arco y aljaba.'},
+  {id:'coraline',nombre:'Patrón Coraline',nivel:'avanzado', file:'patrones/patron_coraline.pdf', precio:16000, desc:'Coraline con chaqueta, piernas, cabello azul y bolso.'},
+];
+const NIVEL_LABEL={basico:'Básico',intermedio:'Intermedio',avanzado:'Avanzado'};
+let seccionActiva='todos', busqueda='';
+const getFavs=()=>{try{return JSON.parse(localStorage.getItem('kc_shop_favs'))||[];}catch{return[];}};
+const setFavs=f=>localStorage.setItem('kc_shop_favs',JSON.stringify(f));
+
+function setSeccion(s,btn){
+  seccionActiva=s;
+  document.querySelectorAll('.shop-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');render();
+}
+function limpiarFiltros(){
+  ['chkLlaveros','chkAnimales','chkAmis','chkPDFs','chkGratis','chkVenta'].forEach(id=>{const el=document.getElementById(id);if(el)el.checked=true;});
+  busqueda='';seccionActiva='todos';
+  const inp=document.getElementById('navSearchInput');if(inp)inp.value='';
+  document.querySelectorAll('.shop-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.shop-tab')?.classList.add('active');
+  render();
+}
+function filtrarBusqueda(val){busqueda=val.toLowerCase();render();}
+function patronDesbloqueado(id){return getPatrones().some(p=>p.id===id);}
+
+function render(){
+  const showLlaveros=document.getElementById('chkLlaveros')?.checked!==false;
+  const showAnimales=document.getElementById('chkAnimales')?.checked!==false;
+  const showAmis  =document.getElementById('chkAmis')?.checked!==false;
+  const showPDFs  =document.getElementById('chkPDFs')?.checked!==false;
+  const showBas   =true;
+  const showInt   =true;
+  const showAva   =true;
+  const showGratis=document.getElementById('chkGratis')?.checked!==false;
+  const showVenta =document.getElementById('chkVenta')?.checked!==false;
+  const sort=document.getElementById('sortSel')?.value||'default';
+  const favs=getFavs();const demo=isDemoOn();
+  const excluirAmis=['patrones'];
+  const excluirPDFs=['amigurumis','animales','personajes','llaveros'];
+
+  let amis=AMIGURUMIS.filter(p=>{
+    const catMatch =
+      (p.cats.includes('llaveros')   && showLlaveros) ||
+      (p.cats.includes('animales')   && showAnimales) ||
+      (p.cats.includes('amigurumis') && showAmis);
+    if(!catMatch) return false;
+    if(busqueda&&!p.nombre.toLowerCase().includes(busqueda))return false;
+    return true;
+  });
+  let pLibres=PATRON_LIBRES.filter(p=>{
+    if(!showPDFs||!showGratis)return false;
+    if(!showBas&&p.nivel==='basico')return false;
+    if(!showInt&&p.nivel==='intermedio')return false;
+    if(!showAva&&p.nivel==='avanzado')return false;
+    if(excluirPDFs.includes(seccionActiva))return false;
+    if(busqueda&&!p.nombre.toLowerCase().includes(busqueda))return false;
+    return true;
+  });
+  let pVenta=PATRON_VENTA.filter(p=>{
+    if(!showPDFs||!showVenta)return false;
+    if(!showAva)return false;
+    if(excluirPDFs.includes(seccionActiva))return false;
+    if(busqueda&&!p.nombre.toLowerCase().includes(busqueda))return false;
+    return true;
+  });
+  const sortArr=arr=>{
+    if(sort==='az')arr.sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    if(sort==='precio-asc')arr.sort((a,b)=>(a.precio||0)-(b.precio||0));
+    if(sort==='precio-desc')arr.sort((a,b)=>(b.precio||0)-(a.precio||0));
+    return arr;
+  };
+  sortArr(amis);sortArr(pLibres);sortArr(pVenta);
+  const total=amis.length+pLibres.length+pVenta.length;
+  document.getElementById('contador').textContent=`${total} producto${total!==1?'s':''}`;
+
+  let html='';
+  const pdfSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  const dlSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>`;
+  const lockSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
+  const cartSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+  const plusSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+  const heartSvg=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  const heartFillSvg=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+
+  if(amis.length){
+    html+=`<div class="sec-sep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Amigurumis</div>`;
+    html+=`<div class="prod-grid">${amis.map(p=>{
+      const faved=favs.includes(p.id);
+      return `<div class="prod-card">
+        <div class="prod-img">
+          <img src="${p.img}" alt="${p.nombre}" loading="lazy" onerror="this.style.display='none'">
+          <div class="prod-badges"><span class="prod-badge nivel">${NIVEL_LABEL[p.nivel]}</span></div>
+          <button class="prod-fav${faved?' faved':''}" onclick="toggleFav(${p.id})" title="Favorito">${faved?heartFillSvg:heartSvg}</button>
+        </div>
+        <div class="prod-body">
+          <h4>${p.nombre}</h4>
+          <p class="prod-desc">${p.desc}</p>
+          <div class="prod-footer">
+            <span class="prod-precio">$${p.precio.toLocaleString('es-CO')}</span>
+            <button class="btn-add" onclick="agregarAlCarrito(${p.id},'ami')">${plusSvg} Agregar</button>
+          </div>
+        </div>
+      </div>`;}).join('')}</div>`;
+  }
+  if(pLibres.length){
+    html+=`<div class="sec-sep" style="${amis.length?'margin-top:32px':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/></svg>Patrones gratuitos — al completar tu nivel</div>`;
+    html+=`<div class="pdf-grid">${pLibres.map(p=>{
+      const desbloqueado=demo||patronDesbloqueado(p.id);
+      return `<div class="pdf-card">
+        <div class="pdf-left">${pdfSvg}</div>
+        <div class="pdf-body">
+          <h4>${p.nombre}</h4>
+          <p>${p.desc} <strong style="color:var(--naranja)">${NIVEL_LABEL[p.nivel]}</strong></p>
+          <div class="pdf-footer">
+            <span class="pdf-precio gratis">Gratis</span>
+            ${desbloqueado
+              ? `<button class="btn-pdf btn-dl" onclick="descargarPDF('${p.file}','${p.nombre}')">${dlSvg} Descargar</button>`
+              : `<button class="btn-pdf btn-lock" onclick="toast('Completa el Nivel ${NIVEL_LABEL[p.nivel]} para desbloquearlo.','info')">${lockSvg} Bloqueado</button>`}
+          </div>
+        </div>
+      </div>`;}).join('')}</div>`;
+  }
+  if(pVenta.length){
+    html+=`<div class="sec-sep" style="${(amis.length||pLibres.length)?'margin-top:32px':''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Patrones de venta</div>`;
+    html+=`<div class="pdf-grid">${pVenta.map(p=>`
+      <div class="pdf-card">
+        <div class="pdf-left">${pdfSvg}</div>
+        <div class="pdf-body">
+          <h4>${p.nombre}</h4>
+          <p>${p.desc}</p>
+          <div class="pdf-footer">
+            <span class="pdf-precio venta">$${p.precio.toLocaleString('es-CO')}</span>
+            <button class="btn-pdf btn-buy" onclick="agregarAlCarrito('${p.id}','pdf')">${cartSvg} Agregar</button>
+          </div>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+  if(!html) html=`<div class="empty-area"><p>No hay productos con ese filtro.</p></div>`;
+  document.getElementById('prodContainer').innerHTML=html;
+}
+
+function toggleFav(id){
+  const favs=getFavs();
+  if(favs.includes(id)) setFavs(favs.filter(f=>f!==id));
+  else { favs.push(id);setFavs(favs);toast('Guardado en favoritos.','info');}
+  render();
+}
+function agregarAlCarrito(id,tipo){
+  const u=getUsuario();if(!u){toast('Inicia sesión para agregar al carrito.','err');abrirLogin();return;}
+  let nombre,precio,img='';
+  if(tipo==='ami'){const p=AMIGURUMIS.find(x=>x.id===id);if(!p)return;nombre=p.nombre;precio=p.precio;img=p.img;}
+  else{const p=PATRON_VENTA.find(x=>x.id===id);if(!p)return;nombre=p.nombre;precio=p.precio;}
+  const carrito=getCarrito();const ex=carrito.find(i=>i.id===id&&i.tipo===tipo);
+  if(ex)ex.qty+=1;else carrito.push({id,tipo,nombre,precio,img,qty:1});
+  setCarrito(carrito);actualizarNav();toast(`${nombre} agregado al carrito.`,'ok');
+  setTimeout(()=>abrirCarritoNav(),400);
+}
+function descargarPDF(file,nombre){const a=document.createElement('a');a.href=file;a.download=`KeyChet_${nombre}.pdf`;a.click();toast(`Descargando ${nombre}...`,'ok');}
+function onLoginSuccess(){actualizarNav();render();}
+
+document.addEventListener('DOMContentLoaded',()=>render());
+</script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidad – Key Chet</title>
+  <link rel="stylesheet" href="css/kc.css">
+  <style>
+    /* ── LAYOUT PRINCIPAL ── */
+    .com-page { display:grid; grid-template-columns:1fr 320px; gap:28px; max-width:1100px; margin:0 auto; padding:32px 24px 60px; }
+
+    /* ── FEED CENTRAL ── */
+    .feed-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+    .feed-tabs { display:flex; gap:4px; background:var(--crema-suave); border-radius:999px; padding:4px; }
+    .feed-tab { padding:7px 18px; border-radius:999px; border:none; background:transparent; font-family:var(--fu); font-size:.86rem; font-weight:700; color:var(--gris-medio); cursor:pointer; transition:var(--trans); }
+    .feed-tab.active { background:white; color:var(--naranja); box-shadow:0 2px 8px rgba(0,0,0,.08); }
+    .feed-tab:hover:not(.active) { color:var(--naranja); }
+    .btn-publicar { display:flex; align-items:center; gap:7px; background:var(--naranja); color:white; border:none; padding:10px 20px; border-radius:999px; font-family:var(--fu); font-size:.88rem; font-weight:800; cursor:pointer; transition:var(--trans); }
+    .btn-publicar:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(232,74,34,.35); }
+    .btn-publicar svg { width:13px; height:13px; }
+
+    /* ── CAJA DE NUEVA PUBLICACIÓN ── */
+    .nueva-pub { background:white; border:2px solid var(--gris-borde); border-radius:20px; padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:var(--trans); }
+    .nueva-pub:hover { border-color:var(--naranja); }
+    .nueva-pub-av { width:40px; height:40px; border-radius:50%; background:var(--naranja); display:flex; align-items:center; justify-content:center; font-family:var(--ft); font-weight:700; color:white; font-size:.95rem; flex-shrink:0; overflow:hidden; }
+    .nueva-pub-av img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .nueva-pub-input { flex:1; border:none; outline:none; font-family:var(--fu); font-size:.92rem; color:var(--gris-medio); background:transparent; cursor:pointer; }
+    .nueva-pub-btn { display:flex; align-items:center; gap:6px; background:var(--crema-suave); border:none; color:var(--naranja); padding:7px 14px; border-radius:999px; font-family:var(--fu); font-size:.8rem; font-weight:700; cursor:pointer; }
+    .nueva-pub-btn svg { width:14px; height:14px; }
+
+    /* ── POST CARD ── */
+    .post-card { background:white; border:2px solid var(--gris-borde); border-radius:20px; overflow:hidden; transition:var(--trans); display:flex; flex-direction:column; }
+    .post-card:hover { border-color:rgba(232,74,34,.3); box-shadow:0 4px 20px rgba(232,74,34,.08); }
+    .post-header { display:flex; align-items:center; gap:12px; padding:16px 20px 12px; }
+    .post-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--ft); font-size:1rem; font-weight:700; color:white; flex-shrink:0; overflow:hidden; cursor:pointer; }
+    .post-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .post-user-info { flex:1; }
+    .post-user-name { font-family:var(--fu); font-size:.9rem; font-weight:800; color:var(--naranja); cursor:pointer; }
+    .post-user-name:hover { text-decoration:underline; }
+    .post-meta { font-family:var(--fu); font-size:.76rem; color:var(--gris-medio); margin-top:2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .nivel-tag { background:var(--crema); color:var(--naranja); padding:2px 8px; border-radius:999px; font-size:.7rem; font-weight:700; }
+    .post-more { background:none; border:none; color:var(--gris-medio); cursor:pointer; padding:4px; border-radius:8px; }
+    .post-more:hover { background:var(--crema-suave); }
+    .post-img { width:100%; max-height:480px; object-fit:cover; display:block; }
+    .post-img.no-img { display:none; }
+    .post-body { padding:14px 20px 0; }
+    .post-titulo { font-family:var(--ft); font-size:1rem; font-weight:700; color:var(--naranja); margin-bottom:5px; }
+    .post-desc { font-size:.9rem; color:var(--gris-medio); line-height:1.6; margin-bottom:10px; }
+    .post-hashtags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+    .hashtag { font-family:var(--fu); font-size:.78rem; font-weight:700; color:var(--naranja); opacity:.75; }
+    .post-footer { display:flex; align-items:center; justify-content:space-between; padding:12px 20px 16px; border-top:1px solid var(--gris-borde); margin-top:4px; }
+    .post-actions { display:flex; gap:4px; }
+    .post-btn { display:flex; align-items:center; gap:6px; border:none; background:transparent; font-family:var(--fu); font-size:.82rem; font-weight:700; color:var(--gris-medio); cursor:pointer; padding:7px 12px; border-radius:10px; transition:var(--trans); }
+    .post-btn:hover { background:var(--crema-suave); color:var(--naranja); }
+    .post-btn.liked { color:var(--AA1739); }
+    .post-btn svg { width:16px; height:16px; }
+    .post-time { font-family:var(--fu); font-size:.76rem; color:#bbb; }
+
+    /* ── SIDEBAR DERECHO ── */
+    .sidebar { display:flex; flex-direction:column; gap:20px; }
+    .sb-card { background:white; border:2px solid var(--gris-borde); border-radius:20px; padding:20px; }
+    .sb-title { font-family:var(--ft); font-size:.95rem; font-weight:700; color:var(--naranja); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
+    .sb-title svg { width:17px; height:17px; }
+
+    /* MI PERFIL SIDEBAR */
+    .sb-perfil { text-align:center; }
+    .sb-av { width:64px; height:64px; border-radius:50%; background:var(--naranja); display:flex; align-items:center; justify-content:center; font-family:var(--ft); font-size:1.6rem; font-weight:700; color:white; margin:0 auto 10px; overflow:hidden; cursor:pointer; border:3px solid var(--crema-oscuro); }
+    .sb-av img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .sb-nombre { font-family:var(--ft); font-size:1rem; font-weight:700; color:var(--naranja); }
+    .sb-nivel { font-family:var(--fu); font-size:.76rem; color:var(--gris-medio); margin-top:3px; margin-bottom:14px; }
+    .sb-stats { display:flex; justify-content:space-around; border-top:1px solid var(--gris-borde); padding-top:14px; }
+    .sb-stat .num { font-family:var(--ft); font-size:1.2rem; font-weight:700; color:var(--naranja); display:block; }
+    .sb-stat .lab { font-size:.68rem; color:var(--gris-medio); font-family:var(--fu); }
+    .no-sesion-sb { text-align:center; padding:8px 0; }
+    .no-sesion-sb p { font-family:var(--fu); font-size:.86rem; color:var(--gris-medio); margin-bottom:12px; }
+
+    /* PATRONES EN TENDENCIA */
+    .trend-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--gris-borde); cursor:pointer; transition:var(--trans); }
+    .trend-item:last-child { border-bottom:none; }
+    .trend-item:hover { opacity:.75; }
+    .trend-thumb { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--crema-suave); flex-shrink:0; }
+    .trend-thumb.placeholder { display:flex; align-items:center; justify-content:center; color:var(--naranja); }
+    .trend-thumb.placeholder svg { width:20px; height:20px; opacity:.4; }
+    .trend-info { flex:1; }
+    .trend-name { font-family:var(--fu); font-size:.84rem; font-weight:700; color:var(--naranja); }
+    .trend-meta { font-size:.73rem; color:var(--gris-medio); font-family:var(--fu); margin-top:2px; }
+    .trend-price { font-family:var(--ft); font-size:.84rem; font-weight:700; color:var(--naranja); white-space:nowrap; }
+    .trend-price.free { color:#2d7d46; }
+
+    /* TEJEDORAS ESTRELLA */
+    .estrella-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--gris-borde); }
+    .estrella-item:last-child { border-bottom:none; }
+    .estrella-av { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--ft); font-size:.86rem; font-weight:700; color:white; flex-shrink:0; cursor:pointer; }
+    .estrella-info { flex:1; }
+    .estrella-name { font-family:var(--fu); font-size:.84rem; font-weight:700; color:var(--naranja); cursor:pointer; }
+    .estrella-name:hover { text-decoration:underline; }
+    .estrella-proyectos { font-size:.72rem; color:var(--gris-medio); font-family:var(--fu); }
+    .btn-seguir { border:2px solid var(--naranja); background:transparent; color:var(--naranja); padding:5px 12px; border-radius:999px; font-family:var(--fu); font-size:.76rem; font-weight:700; cursor:pointer; transition:var(--trans); white-space:nowrap; }
+    .btn-seguir:hover, .btn-seguir.siguiendo { background:var(--naranja); color:white; }
+
+    /* RETO SEMANAL */
+    .reto-card { background:var(--naranja); border-radius:16px; padding:20px; color:white; position:relative; overflow:hidden; }
+    .reto-card::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; background:rgba(255,255,255,.1); border-radius:50%; }
+    .reto-label { font-family:var(--fu); font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; opacity:.8; margin-bottom:6px; }
+    .reto-title { font-family:var(--ft); font-size:1rem; font-weight:700; margin-bottom:8px; }
+    .reto-desc { font-family:var(--fu); font-size:.8rem; line-height:1.5; opacity:.85; margin-bottom:14px; }
+    .reto-prog { background:rgba(255,255,255,.2); border-radius:999px; height:6px; margin-bottom:6px; overflow:hidden; }
+    .reto-prog-fill { height:100%; background:white; border-radius:999px; }
+    .reto-pts { font-family:var(--fu); font-size:.72rem; opacity:.8; margin-bottom:14px; }
+    .reto-btn { display:block; text-align:center; background:white; color:var(--naranja); border:none; padding:9px; border-radius:999px; font-family:var(--fu); font-size:.84rem; font-weight:800; cursor:pointer; width:100%; transition:var(--trans); }
+    .reto-btn:hover { transform:scale(1.02); }
+
+    /* MODAL PUBLICAR */
+    .pub-modal-img-prev { width:100%; aspect-ratio:4/3; border-radius:12px; object-fit:cover; margin-top:.5rem; border:2px solid var(--gris-borde); display:none; background:var(--crema-suave); }
+
+    /* Menú de opciones del post */
+    .post-menu-wrap { position:relative; }
+    .post-menu-dropdown { display:none; position:absolute; top:100%; right:0; background:white; border:2px solid var(--gris-borde); border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.12); min-width:160px; z-index:50; overflow:hidden; }
+    .post-menu-dropdown.open { display:block; }
+    .post-menu-item { display:flex; align-items:center; gap:8px; padding:10px 16px; font-family:var(--fu); font-size:.83rem; font-weight:700; cursor:pointer; transition:background .15s; border:none; background:transparent; width:100%; text-align:left; }
+    .post-menu-item:hover { background:var(--crema-suave); }
+    .post-menu-item.danger { color:#e74c3c; }
+    .post-menu-item.danger:hover { background:#fef2f2; }
+    .post-menu-item svg { width:14px; height:14px; flex-shrink:0; }
+    .post-modal-img { width:100%; max-height:340px; object-fit:cover; border-radius:12px; margin-bottom:14px; }
+    .comment-item { padding:.6rem 0; border-bottom:1px solid var(--gris-borde); }
+    .comment-item:last-child { border-bottom:none; }
+    .comment-author { font-family:var(--ft); font-weight:700; font-size:.86rem; color:var(--naranja); }
+    .comment-text { font-size:.83rem; color:var(--gris-medio); margin-top:.1rem; line-height:1.5; }
+
+    /* MODAL PERFIL */
+    .user-prof-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+    .user-post-th { aspect-ratio:1/1; border-radius:10px; overflow:hidden; background:var(--crema-suave); cursor:pointer; }
+    .user-post-th img { width:100%; height:100%; object-fit:cover; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .com-page { grid-template-columns:1fr !important; padding:20px 16px 48px; gap:20px; }
+      .sidebar { order:-1; display:grid; grid-template-columns:1fr 1fr; gap:14px; width:100%; }
+      .reto-card { grid-column:1/-1; }
+    }
+    @media(max-width:600px){
+      .com-page { padding:14px 12px 40px; gap:14px; }
+      #feedContainer { grid-template-columns:1fr !important; gap:12px !important; }
+      .sidebar { grid-template-columns:1fr; }
+      .feed-header { flex-direction:column; align-items:stretch; gap:10px; }
+      .feed-tabs { width:100%; }
+      .feed-tab { padding:7px 10px; font-size:.78rem; }
+      .btn-publicar { width:100%; justify-content:center; }
+      .nueva-pub { padding:10px 12px; gap:8px; }
+      .post-header { padding:12px 12px 8px; }
+      .post-body { padding:8px 12px 0; }
+      .post-desc { font-size:.82rem; }
+      .post-footer { padding:8px 12px 12px; }
+      .post-btn { padding:5px 7px; font-size:.74rem; gap:3px; }
+      .post-btn svg { width:13px; height:13px; }
+      .sb-title { font-size:.88rem; }
+      .trend-item { gap:8px; }
+      .estrella-av { width:30px; height:30px; font-size:.75rem; }
+    }
+      /* post cards */
+      .post-header { padding:12px 14px 10px; }
+      .post-body { padding:10px 14px 0; }
+      .post-footer { padding:10px 14px 12px; }
+      .post-btn { padding:6px 8px; font-size:.76rem; gap:4px; }
+      .post-btn svg { width:14px; height:14px; }
+    }
+    @media(max-width:480px){ .feed-tabs { font-size:.76rem; } }
+  </style>
+</head>
+<body>
+<script>const PAGE_TITLE='Comunidad';</script>
+<nav id="main-nav"></nav>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div style="box-shadow:0 6px 18px 0 rgba(0,0,0,0.10);position:relative;z-index:2;background:var(--crema-suave);padding:40px 48px 36px;">
+  <div style="max-width:1100px;margin:0 auto">
+    <p style="font-family:var(--fu);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--fucsia);margin-bottom:8px">Comunidad Key Chet</p>
+    <h1 style="font-family:var(--ft);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;color:var(--naranja);line-height:1.1">Comparte, inspírate<br>y crece junto a otras.</h1>
+  </div>
+</div>
+
+<div class="com-page">
+
+  <!-- ── FEED CENTRAL ── -->
+  <main>
+    <!-- Header del feed -->
+    <div class="feed-header">
+      <div class="feed-tabs" id="feedTabs">
+        <button class="feed-tab active" onclick="setTab('todo',this)">Todo</button>
+        <button class="feed-tab" onclick="setTab('parati',this)">Para ti</button>
+        <button class="feed-tab" onclick="setTab('siguiendo',this)">Siguiendo</button>
+      </div>
+      <button class="btn-publicar" onclick="abrirPublicar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Publicar
+      </button>
+    </div>
+
+    <!-- Caja de nueva publicación rápida -->
+    <div class="nueva-pub" onclick="abrirPublicar()">
+      <div class="nueva-pub-av" id="quickAvatar">?</div>
+      <input class="nueva-pub-input" placeholder="¿Qué estás tejiendo hoy?" readonly>
+      <button class="nueva-pub-btn" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Foto
+      </button>
+    </div>
+
+    <!-- Posts -->
+    <div id="feedContainer"></div>
+  </main>
+
+  <!-- ── SIDEBAR DERECHO ── -->
+  <aside class="sidebar">
+
+    <!-- Mi perfil -->
+    <div class="sb-card">
+      <div id="sbPerfilWidget"></div>
+    </div>
+
+    <!-- Patrones en tendencia -->
+    <div class="sb-card">
+      <p class="sb-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Patrones en Tendencia
+      </p>
+      <div id="tendencias">
+        <div class="trend-item" onclick="window.location.href='compras.html'">
+          <div class="trend-thumb placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="trend-info"><p class="trend-name">Patrón Gato</p><div style="display:flex;gap:4px;align-items:center;margin-top:2px"><span style="background:var(--crema);color:var(--naranja);padding:1px 6px;border-radius:999px;font-size:.68rem;font-weight:700">Intermedio</span></div></div>
+          <span class="trend-price free">Gratis</span>
+        </div>
+        <div class="trend-item" onclick="window.location.href='compras.html'">
+          <div class="trend-thumb placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="trend-info"><p class="trend-name">Patrón Stitch</p><div style="display:flex;gap:4px;align-items:center;margin-top:2px"><span style="background:var(--crema);color:var(--naranja);padding:1px 6px;border-radius:999px;font-size:.68rem;font-weight:700">Avanzado</span></div></div>
+          <span class="trend-price">$14.000</span>
+        </div>
+        <div class="trend-item" onclick="window.location.href='compras.html'">
+          <div class="trend-thumb placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="trend-info"><p class="trend-name">Patrón Corazón</p><div style="display:flex;gap:4px;align-items:center;margin-top:2px"><span style="background:var(--crema);color:var(--naranja);padding:1px 6px;border-radius:999px;font-size:.68rem;font-weight:700">Básico</span></div></div>
+          <span class="trend-price free">Gratis</span>
+        </div>
+        <div style="margin-top:10px;text-align:center">
+          <a href="compras.html" style="font-family:var(--fu);font-size:.8rem;font-weight:700;color:var(--naranja);text-decoration:none">Ver todo el marketplace →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tejedoras estrella -->
+    <div class="sb-card">
+      <p class="sb-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Tejedoras Estrella
+      </p>
+      <div id="tejadorasEstrella"></div>
+    </div>
+
+    <!-- Reto semanal -->
+    <div class="reto-card">
+      <p class="reto-label">Reto semanal</p>
+      <p class="reto-title">Teje con lana y comparte tu avance</p>
+      <p class="reto-desc">Usa el hashtag #RetoKeyChet para ganar una insignia exclusiva de la semana.</p>
+      <div class="reto-prog"><div class="reto-prog-fill" style="width:35%"></div></div>
+      <p class="reto-pts">Progreso de la comunidad: 35%</p>
+      <button class="reto-btn" onclick="abrirPublicar()">Participar</button>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="footer-logo">Key Chet</div>
+      <p>Aprende crochet a tu ritmo. Cursos por niveles, comunidad vibrante y tienda de patrones en un solo lugar.</p>
+      <div class="footer-socials" style="margin-top:16px">
+        <a href="https://www.instagram.com/keychet.co?igsh=MTdrZm80b2w4bDhn&utm_source=qr" target="_blank" class="footer-social-btn" title="Instagram Key Chet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+        <a href="https://wa.me/573005059796" class="footer-social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Aprender</h4>
+      <a href="cursos.html">Cursos de crochet</a>
+      <a href="cursos.html">Nivel Básico</a>
+      <a href="cursos.html">Nivel Intermedio</a>
+      <a href="cursos.html">Nivel Avanzado</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explorar</h4>
+      <a href="index.html">Inicio</a>
+      <a href="comunidad.html">Comunidad</a>
+      <a href="compras.html">Tienda</a>
+      <a href="mis-proyectos.html">Mi perfil</a>
+    </div>
+    <div class="footer-col">
+      <h4>Ayuda</h4>
+      <a href="ayuda.html">Centro de ayuda</a>
+      <a href="ayuda.html#sec-compras">Compras y pagos</a>
+      <a href="ayuda.html#sec-patrones">Patrones PDF</a>
+      <a href="https://wa.me/573005059796">Contáctanos</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Key Chet · Hecho con amor y lana en Colombia</p>
+    
+  </div>
+</footer>
+
+<!-- MODALES AUTH -->
+<div class="modal-overlay" id="modalLogin">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarLogin()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Bienvenida de nuevo</h2><p class="modal-sub">Entra a tu cuenta Key Chet</p></div>
+    <form onsubmit="iniciarSesion(event)">
+      <div class="form-group"><label>Correo electrónico</label><input type="email" id="loginEmail" placeholder="tu@correo.com" required></div>
+      <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-form">Entrar</button>
+    </form>
+    <p class="modal-switch">¿No tienes cuenta? <a onclick="cerrarLogin();abrirRegistro()">Regístrate gratis</a></p>
+  </div>
+</div>
+<div class="modal-overlay" id="modalRegistro"><div class="modal"><button class="modal-close" onclick="cerrarRegistro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div style="text-align:center;margin-bottom:1.5rem"><h2>Únete a Key Chet</h2><p class="modal-sub">Crea tu cuenta gratis</p></div><form onsubmit="registrar(event)"><div class="form-group"><label>Nombre completo</label><input type="text" id="regNombre" placeholder="Tu nombre" required></div><div class="form-group"><label>Correo electrónico</label><input type="email" id="regEmail" placeholder="tu@correo.com" required></div><div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6" required></div><button type="submit" class="btn-form">Crear mi cuenta</button></form><p class="modal-switch">¿Ya tienes cuenta? <a onclick="cerrarRegistro();abrirLogin()">Iniciar sesión</a></p></div></div>
+<div class="modal-overlay" id="modalCarrito"><div class="modal" style="max-width:500px"><button class="modal-close" onclick="document.getElementById('modalCarrito').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><h2 style="margin-bottom:1.5rem">Mi carrito</h2><div id="carritoItems" style="max-height:300px;overflow-y:auto;margin-bottom:1rem"></div><div style="padding-top:1rem;border-top:2px solid var(--gris-borde);display:flex;align-items:center;justify-content:space-between"><div><p style="font-family:var(--fu);font-size:.82rem;color:var(--gris-medio)">Total</p><div style="font-family:var(--ft);font-size:1.5rem;font-weight:700;color:var(--naranja)" id="carritoTotal">$0</div></div><button class="btn-form" style="width:auto;padding:12px 24px;margin-top:0" onclick="finalizarCompra()">Finalizar compra</button></div></div></div>
+
+<!-- MODAL PUBLICAR -->
+<div class="modal-overlay" id="modalPublicar">
+  <div class="modal" style="max-width:480px">
+    <button class="modal-close" onclick="document.getElementById('modalPublicar').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div style="text-align:center;margin-bottom:1.5rem"><h2>Compartir mi proyecto</h2><p class="modal-sub">Cuéntale a la comunidad lo que creaste</p></div>
+    <form onsubmit="publicar(event)">
+      <div class="form-group"><label>Título</label><input type="text" id="pubTitulo" placeholder="Ej: Mi primera abejita" required></div>
+      <div class="form-group"><label>Descripción</label><textarea id="pubDesc" rows="3" placeholder="Cuéntanos sobre tu proceso..." required></textarea></div>
+      <div class="form-group"><label>Nivel</label><select id="pubNivel"><option value="basico">Básico</option><option value="intermedio">Intermedio</option><option value="avanzado">Avanzado</option></select></div>
+      <div class="form-group"><label>Hashtags (separados por espacio)</label><input type="text" id="pubHashtags" placeholder="#Amigurumi #MiPrimeraVez"></div>
+      <div class="form-group"><label>Foto (opcional)</label><input type="file" id="pubFoto" accept="image/*" style="padding:.5rem" onchange="previewFoto(this)"><img id="fotoPreview" class="pub-modal-img-prev" alt="Vista previa"></div>
+      <button type="submit" class="btn-form" style="background:var(--naranja)">Publicar en la comunidad</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL POST DETALLE -->
+<div class="modal-overlay" id="modalPost">
+  <div class="modal" style="max-width:520px;max-height:85vh;overflow-y:auto">
+    <button class="modal-close" onclick="document.getElementById('modalPost').classList.remove('open')" style="position:sticky;top:0;right:0;z-index:10;align-self:flex-end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div id="postDetalle"></div>
+    <div id="postComentarios" style="max-height:200px;overflow-y:auto;margin-bottom:1rem"></div>
+    <div style="display:flex;gap:.6rem;align-items:center">
+      <input type="text" id="nuevoComentario" placeholder="Escribe un comentario..."
+        style="flex:1;padding:.65rem 1rem;border:2px solid var(--gris-borde);border-radius:20px;outline:none;font-family:var(--fc);color:var(--naranja);font-size:.88rem"
+        onfocus="this.style.borderColor='var(--naranja)'" onblur="this.style.borderColor='var(--gris-borde)'"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();enviarComentario();}">
+      <button class="btn-primary" style="background:var(--naranja);padding:9px 16px;font-size:.84rem" onclick="enviarComentario()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PERFIL COMPAÑERA -->
+<div class="modal-overlay" id="modalPerfil">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="document.getElementById('modalPerfil').classList.remove('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div id="perfilUsuario"></div>
+  </div>
+</div>
+
+<!-- MODAL INSIGNIA -->
+<div class="modal-overlay" id="modalInsignia">
+  <div class="modal" style="max-width:340px;text-align:center">
+    <div id="insModalIconCom" style="width:72px;height:72px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;animation:insPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"></div>
+    <h2 style="margin-bottom:.4rem">Insignia desbloqueada</h2>
+    <p style="font-family:var(--fu);font-size:1rem;font-weight:700;color:var(--naranja)" id="insModalNombreCom"></p>
+    <p class="modal-sub" id="insModalDescCom" style="margin-top:.3rem"></p>
+    <div style="background:var(--crema-suave);border-radius:14px;padding:.9rem;margin:1rem 0;border:2px solid var(--crema-oscuro)"><p style="font-family:var(--fu);font-size:.8rem;color:var(--gris-medio)">Disponible en tu perfil</p></div>
+    <button class="btn-form" onclick="document.getElementById('modalInsignia').classList.remove('open')">Continuar</button>
+  </div>
+</div>
+<style>@keyframes insPopIn{0%{transform:scale(0) rotate(-15deg)}60%{transform:scale(1.15) rotate(5deg)}100%{transform:scale(1) rotate(0)}}</style>
+
+<script src="js/kc.js"></script>
+<script>
+const INSIGNIAS=[
+  {id:'puntada',    color:'#e84a22',label:'Primera puntada',desc:'Publica tu primer proyecto',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"/><line x1="16" y1="8" x2="2" y2="22"/></svg>`},
+  {id:'fotografa',  color:'#AA1739',label:'Fotógrafa',desc:'Publica 2 proyectos',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`},
+  {id:'comentarista',color:'#AA1739',label:'Comentarista',desc:'Comenta en algún proyecto',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`},
+  {id:'creadora',   color:'#ff9800',label:'Creadora',desc:'Publica 4 proyectos',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`},
+  {id:'favorita',   color:'#e84a22',label:'Favorita',desc:'Recibe 50 likes',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`},
+  {id:'inspiracion',color:'#2196f3',label:'Inspiración',desc:'10 likes en total',icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>`},
+];
+
+const TEJEDORAS_ESTRELLA = [
+  {nombre:'@ana_crochet', inicial:'A', color:'#e84a22', proyectos:45, pts:320},
+  {nombre:'@luli_teje',   inicial:'L', color:'#AA1739', proyectos:38, pts:280},
+  {nombre:'@maricris',    inicial:'M', color:'#ff9800', proyectos:32, pts:241},
+  {nombre:'@sofi_crafts', inicial:'S', color:'#AA1739', proyectos:28, pts:198},
+];
+
+const heartIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+const heartFillIcon=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+const chatIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+const shareIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+const bookmarkIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+const imgIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`;
+
+let tabActiva='todo', postActivo=null, busqueda='';
+
+/* ── FEED ── */
+function getFeedPosts(){
+  let posts=[...getPosts()];
+  if(tabActiva==='siguiendo'){
+    const f=getFollowing();
+    posts=posts.filter(p=>f.includes(p.usuario));
+  } else if(tabActiva==='parati'){
+    const u=getUsuario();
+    posts=posts.filter(p=>u?p.nivel===((getProgreso('basico').completadas.length>0)?'basico':'basico'):true);
+  }
+  return posts;
+}
+
+function setTab(tab,btn){
+  tabActiva=tab;
+  document.querySelectorAll('.feed-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeed();
+}
+
+function renderFeed(){
+  const posts=getFeedPosts();
+  const cont=document.getElementById('feedContainer');
+  if(!posts.length){
+    cont.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--gris-medio);grid-column:1/-1">${imgIcon}<p style="font-family:var(--fu);margin-top:1rem">${tabActiva==='siguiendo'?'Sigue a otras compañeras para ver sus publicaciones.':'Aún no hay publicaciones.'}</p></div>`;
+    cont.style.display='block';
+    return;
+  }
+  cont.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:16px;';
+  cont.innerHTML=posts.map(p=>buildPostCard(p)).join('');
+}
+
+function buildPostCard(p){
+  const u=getUsuario();
+  const esPropia=u&&p.usuario===u.nombre||p.isOwn;
+  const hashtags=p.hashtags?p.hashtags.split(' ').filter(h=>h).map(h=>`<span class="hashtag">${h.startsWith('#')?h:'#'+h}</span>`).join(''):'';
+  const menuId=`menu-${p.id}`;
+  return `<article class="post-card">
+    <div class="post-header">
+      <div class="post-avatar" style="background:${p.color}" onclick="abrirPerfilUsuario('${p.usuario}')">${p.inicial}</div>
+      <div class="post-user-info">
+        <p class="post-user-name" onclick="abrirPerfilUsuario('${p.usuario}')">${p.usuario}</p>
+        <div class="post-meta">
+          <span class="nivel-tag">Nivel ${p.nivel}</span>
+          <span>${p.tiempo}</span>
+        </div>
+      </div>
+      <div class="post-menu-wrap">
+        <button class="post-more" onclick="toggleMenu('${menuId}')" title="Más opciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+        <div class="post-menu-dropdown" id="${menuId}">
+          <button class="post-menu-item" onclick="toggleMenu('${menuId}');toast('Enlace copiado.','ok')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartir
+          </button>
+          ${esPropia?`
+          <button class="post-menu-item danger" onclick="toggleMenu('${menuId}');eliminarPost(${p.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Eliminar publicación
+          </button>`:''}
+        </div>
+      </div>
+    </div>
+    ${p.img?`<img class="post-img" src="${p.img}" alt="${p.titulo}" onerror="this.style.display='none'">`:''}
+    <div class="post-body">
+      <p class="post-titulo">${p.titulo}</p>
+      <p class="post-desc">${p.desc}</p>
+      ${hashtags?`<div class="post-hashtags">${hashtags}</div>`:''}
+    </div>
+    <div class="post-footer">
+      <div class="post-actions">
+        <button class="post-btn${p.meGusta?' liked':''}" onclick="toggleLike(${p.id})">${p.meGusta?heartFillIcon:heartIcon} ${p.likes}</button>
+        <button class="post-btn" onclick="abrirPost(${p.id})">${chatIcon} ${p.comentarios.length}</button>
+        <button class="post-btn" onclick="toast('Enlace copiado.','ok')">${shareIcon}</button>
+        <button class="post-btn" onclick="toast('Guardado.','info')">${bookmarkIcon}</button>
+      </div>
+      <span class="post-time">${p.tiempo}</span>
+    </div>
+  </article>`;
+}
+
+function toggleMenu(id){
+  const m=document.getElementById(id);if(!m)return;
+  const open=m.classList.contains('open');
+  // Cerrar todos los menús abiertos
+  document.querySelectorAll('.post-menu-dropdown.open').forEach(el=>el.classList.remove('open'));
+  if(!open)m.classList.add('open');
+}
+
+function eliminarPost(id){
+  if(!confirm('¿Eliminar esta publicación? Esta acción no se puede deshacer.'))return;
+  const posts=getPosts().filter(p=>p.id!==id);
+  setPosts(posts);renderFeed();renderSbPerfil();
+  toast('Publicación eliminada.','ok');
+}
+
+// Cerrar menús al hacer clic fuera
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.post-menu-wrap')){
+    document.querySelectorAll('.post-menu-dropdown.open').forEach(el=>el.classList.remove('open'));
+  }
+});
+
+/* ── LIKES ── */
+function toggleLike(id){
+  const u=getUsuario();if(!u){toast('Inicia sesión para dar like.','err');abrirLogin();return;}
+  const posts=getPosts();const p=posts.find(x=>x.id===id);if(!p)return;
+  p.meGusta=!p.meGusta;p.likes+=p.meGusta?1:-1;
+  if(p.meGusta) addNotif('like',`A ${u.nombre} le gustó tu publicación: "${p.titulo}"`);
+  setPosts(posts);renderFeed();
+  if(postActivo&&postActivo.id===id){postActivo=p;renderPostDetalle();}
+}
+
+/* ── POST DETALLE ── */
+function abrirPost(id){
+  const posts=getPosts();postActivo=posts.find(p=>p.id===id);if(!postActivo)return;
+  renderPostDetalle();renderComentarios();
+  document.getElementById('modalPost').classList.add('open');
+}
+function renderPostDetalle(){
+  if(!postActivo)return;
+  const p=postActivo;
+  document.getElementById('postDetalle').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;cursor:pointer" onclick="document.getElementById('modalPost').classList.remove('open');abrirPerfilUsuario('${p.usuario}')">
+      <div style="width:40px;height:40px;border-radius:50%;background:${p.color};display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-weight:700;color:white;font-size:.95rem">${p.inicial}</div>
+      <div><strong style="font-family:var(--ft);color:var(--naranja)">${p.usuario}</strong><br><span style="font-size:.72rem;color:#bbb;font-family:var(--fu)">${p.tiempo} · Nivel ${p.nivel}</span></div>
+    </div>
+    ${p.img?`<img class="post-modal-img" src="${p.img}" alt="${p.titulo}" onerror="this.style.display='none'">`:''}
+    <h3 style="font-family:var(--ft);color:var(--naranja);margin-bottom:5px">${p.titulo}</h3>
+    <p style="font-size:.88rem;color:var(--gris-medio);margin-bottom:10px;line-height:1.6">${p.desc}</p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--gris-borde)">
+      <button class="post-btn${p.meGusta?' liked':''}" onclick="toggleLike(${p.id})" style="padding:6px 10px">${p.meGusta?heartFillIcon:heartIcon} ${p.likes}</button>
+      <span style="font-family:var(--fu);font-size:.8rem;color:var(--gris-medio)">${p.comentarios.length} comentarios</span>
+    </div>
+    <h4 style="font-family:var(--ft);font-size:.9rem;color:var(--naranja);margin-bottom:8px">Comentarios</h4>`;
+}
+function renderComentarios(){
+  if(!postActivo)return;
+  const lista=document.getElementById('postComentarios');
+  lista.innerHTML=postActivo.comentarios.length===0
+    ?`<p style="text-align:center;color:var(--gris-medio);padding:.8rem;font-family:var(--fu);font-size:.84rem">Sé la primera en comentar</p>`
+    :postActivo.comentarios.map(c=>`<div class="comment-item"><span class="comment-author">${c.autor}</span><p class="comment-text">${c.texto}</p></div>`).join('');
+}
+function enviarComentario(){
+  const u=getUsuario();if(!u){toast('Inicia sesión para comentar.','err');return;}
+  const input=document.getElementById('nuevoComentario');const texto=input.value.trim();if(!texto)return;
+  const posts=getPosts();const post=posts.find(p=>p.id===postActivo.id);if(!post)return;
+  post.comentarios.push({autor:u.nombre,texto});setPosts(posts);postActivo=post;
+  input.value='';renderComentarios();renderFeed();
+  addNotif('comment',`Comentaste en "${post.titulo}"`);
+  const uu=getUsuario();if(uu){uu.puntos=(uu.puntos||0)+5;setUsuario(uu);}
+  verificarInsignias();
+}
+
+/* ── PUBLICAR ── */
+function abrirPublicar(){
+  const u=getUsuario();if(!u){toast('Inicia sesión para publicar.','err');abrirLogin();return;}
+  document.getElementById('modalPublicar').classList.add('open');
+}
+function previewFoto(input){
+  const file=input.files[0];const prev=document.getElementById('fotoPreview');
+  if(file){const r=new FileReader();r.onload=ev=>{prev.src=ev.target.result;prev.style.display='block';};r.readAsDataURL(file);}
+  else prev.style.display='none';
+}
+function publicar(e){
+  e.preventDefault();const u=getUsuario();if(!u)return;
+  const titulo=document.getElementById('pubTitulo').value.trim();
+  const desc=document.getElementById('pubDesc').value.trim();
+  const nivel=document.getElementById('pubNivel').value;
+  const hashtags=document.getElementById('pubHashtags').value.trim();
+  const file=document.getElementById('pubFoto').files[0];
+  const save=(imgData)=>{
+    const posts=getPosts();
+    posts.unshift({id:Date.now(),usuario:u.nombre,inicial:u.nombre[0].toUpperCase(),color:'#e84a22',
+      nivel,img:imgData||'',titulo,desc,hashtags,ig:u.ig||'',
+      tiempo:'hace un momento',meGusta:false,isOwn:true,comentarios:[],likes:0});
+    setPosts(posts);
+    const uu=getUsuario();if(uu){uu.puntos=(uu.puntos||0)+15;setUsuario(uu);}
+    addNotif('post',`Publicaste: "${titulo}"`);
+    document.getElementById('modalPublicar').classList.remove('open');
+    ['pubTitulo','pubDesc','pubHashtags'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pubFoto').value='';
+    document.getElementById('fotoPreview').style.display='none';
+    renderFeed();renderSbPerfil();verificarInsignias();
+    toast('¡Proyecto publicado! +15 puntos','ok');
+  };
+  if(file){const r=new FileReader();r.onload=ev=>save(ev.target.result);r.readAsDataURL(file);}else save(null);
+}
+
+/* ── INSIGNIAS ── */
+function verificarInsignias(){
+  const u=getUsuario();if(!u)return;
+  const posts=getPosts();const mios=posts.filter(p=>p.isOwn);const ins=getInsignias();
+  const add=(id)=>{
+    if(!ins.includes(id)){
+      ins.push(id);setInsignias(ins);
+      const uu=getUsuario();if(uu){uu.puntos=(uu.puntos||0)+20;setUsuario(uu);}
+      const data=INSIGNIAS.find(x=>x.id===id);if(!data)return;
+      addNotif('badge',`¡Desbloqueaste la insignia "${data.label}"!`);
+      setTimeout(()=>{
+        const el=document.getElementById('insModalIconCom');
+        if(el){el.innerHTML=data.icon;el.style.background=data.color;}
+        const nm=document.getElementById('insModalNombreCom');if(nm)nm.textContent=data.label;
+        const dc=document.getElementById('insModalDescCom');if(dc)dc.textContent=data.desc;
+        document.getElementById('modalInsignia').classList.add('open');
+      },500);
+    }
+  };
+  if(mios.length>=1)add('puntada');
+  if(mios.length>=2)add('fotografa');
+  if(mios.length>=4)add('creadora');
+  const totalLikes=mios.reduce((s,p)=>s+p.likes,0);
+  if(totalLikes>=10)add('inspiracion');
+  if(mios.some(p=>p.likes>=50))add('favorita');
+  const totalCom=posts.reduce((s,p)=>s+p.comentarios.filter(c=>c.autor===u.nombre).length,0);
+  if(totalCom>=1)add('comentarista');
+}
+
+/* ── SIDEBAR PERFIL ── */
+function renderSbPerfil(){
+  const u=getUsuario();const cont=document.getElementById('sbPerfilWidget');
+  // Quick avatar update
+  const qa=document.getElementById('quickAvatar');
+  if(qa&&u){qa.innerHTML=u.avatar?`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:`${u.nombre[0].toUpperCase()}`;}
+  if(!u){
+    cont.innerHTML=`<div class="no-sesion-sb"><div class="sb-title" style="justify-content:center">Mi perfil</div><p>Inicia sesión para ver tu perfil y publicar proyectos.</p><button class="btn-primary" onclick="abrirLogin()" style="font-size:.85rem;padding:9px 20px">Entrar</button></div>`;
+    return;
+  }
+  const mios=getPosts().filter(p=>p.isOwn);const ins=getInsignias();
+  cont.innerHTML=`
+    <div class="sb-perfil">
+      <div class="sb-av" onclick="window.location.href='mis-proyectos.html'">${u.avatar?`<img src="${u.avatar}">`:`${u.nombre[0].toUpperCase()}`}</div>
+      <p class="sb-nombre">${u.nombre}</p>
+      <p class="sb-nivel">${u.puntos||0} puntos · ${ins.length} insignias</p>
+      <div class="sb-stats">
+        <div class="sb-stat"><span class="num">${mios.length}</span><span class="lab">Proyectos</span></div>
+        <div class="sb-stat"><span class="num">${ins.length}</span><span class="lab">Insignias</span></div>
+        <div class="sb-stat"><span class="num">${getFollowing().length}</span><span class="lab">Siguiendo</span></div>
+      </div>
+    </div>`;
+}
+
+/* ── TEJEDORAS ESTRELLA ── */
+function renderTejadorasEstrella(){
+  const u=getUsuario();const following=getFollowing();
+  document.getElementById('tejadorasEstrella').innerHTML=TEJEDORAS_ESTRELLA.map(t=>{
+    const sigue=following.includes(t.nombre);
+    return `<div class="estrella-item">
+      <div class="estrella-av" style="background:${t.color}" onclick="abrirPerfilUsuario('${t.nombre}')">${t.inicial}</div>
+      <div class="estrella-info">
+        <p class="estrella-name" onclick="abrirPerfilUsuario('${t.nombre}')">${t.nombre}</p>
+        <p class="estrella-proyectos">${t.proyectos} proyectos</p>
+      </div>
+      <button class="btn-seguir${sigue?' siguiendo':''}" onclick="toggleFollowEstrella('${t.nombre}',this)">${sigue?'Siguiendo':'Seguir'}</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleFollowEstrella(nombre,btn){
+  const u=getUsuario();if(!u){toast('Inicia sesión para seguir.','err');abrirLogin();return;}
+  const f=getFollowing();
+  if(f.includes(nombre)){setFollowing(f.filter(x=>x!==nombre));btn.classList.remove('siguiendo');btn.textContent='Seguir';toast(`Dejaste de seguir a ${nombre}.`,'info');}
+  else{f.push(nombre);setFollowing(f);btn.classList.add('siguiendo');btn.textContent='Siguiendo';toast(`Ahora sigues a ${nombre}.`,'ok');addNotif('post',`Empezaste a seguir a ${nombre}.`);}
+  renderSbPerfil();
+}
+
+/* ── PERFIL COMPAÑERA ── */
+function abrirPerfilUsuario(nombre){
+  const posts=getPosts().filter(p=>p.usuario===nombre);
+  const u=getUsuario();const following=getFollowing();const sigue=following.includes(nombre);
+  const ig=posts[0]?.ig||'';
+  const color=posts[0]?.color||TEJEDORAS_ESTRELLA.find(t=>t.nombre===nombre)?.color||'#e84a22';
+  const inicial=nombre[0].toUpperCase();
+  const postsHTML=posts.slice(0,4).map(p=>`
+    <div class="user-post-th" onclick="document.getElementById('modalPerfil').classList.remove('open');abrirPost(${p.id})">
+      ${p.img?`<img src="${p.img}" alt="${p.titulo}" onerror="this.style.display='none'">`:
+        `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--crema-suave);color:var(--naranja)">${imgIcon}</div>`}
+    </div>`).join('');
+  document.getElementById('perfilUsuario').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div style="width:62px;height:62px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-family:var(--ft);font-size:1.5rem;font-weight:700;color:white;overflow:hidden;flex-shrink:0">${inicial}</div>
+      <div style="flex:1">
+        <h3 style="font-family:var(--ft);font-size:1.15rem;color:var(--naranja)">${nombre}</h3>
+        <p style="font-family:var(--fu);font-size:.78rem;color:var(--gris-medio)">${posts.length} publicaciones</p>
+      </div>
+      ${u&&u.nombre!==nombre?`<button class="btn-seguir${sigue?' siguiendo':''}" onclick="toggleFollowModal('${nombre}',this)">${sigue?'Siguiendo':'Seguir'}</button>`:''}
+    </div>
+    ${ig?`<a href="https://instagram.com/${ig.replace('@','')}" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#e1306c;color:white;padding:7px 14px;border-radius:999px;font-family:var(--fu);font-size:.8rem;font-weight:700;text-decoration:none;margin-bottom:14px;transition:var(--trans)"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" style="width:14px;height:14px"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="white"/></svg>${ig}</a>`:''}
+    <h4 style="font-family:var(--ft);font-size:.9rem;color:var(--naranja);margin:0 0 8px">Publicaciones</h4>
+    <div class="user-prof-grid">${postsHTML||`<p style="grid-column:1/-1;font-family:var(--fu);font-size:.84rem;color:var(--gris-medio)">Aún no hay publicaciones.</p>`}</div>`;
+  document.getElementById('modalPerfil').classList.add('open');
+}
+
+function toggleFollowModal(nombre,btn){
+  const u=getUsuario();if(!u)return;
+  const f=getFollowing();
+  if(f.includes(nombre)){setFollowing(f.filter(x=>x!==nombre));btn.classList.remove('siguiendo');btn.textContent='Seguir';}
+  else{f.push(nombre);setFollowing(f);btn.classList.add('siguiendo');btn.textContent='Siguiendo';addNotif('post',`Empezaste a seguir a ${nombre}.`);}
+  renderSbPerfil();renderTejadorasEstrella();
+}
+
+function filtrarBusqueda(val){busqueda=val.toLowerCase();renderFeed();}
+function onLoginSuccess(){renderSbPerfil();renderFeed();}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  renderFeed();
+  renderSbPerfil();
+  renderTejadorasEstrella();
+  document.querySelectorAll('.modal-overlay').forEach(m=>
+    m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');})
+  );
+});
+</script>
+</body>
+</html>
